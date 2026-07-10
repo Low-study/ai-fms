@@ -1,0 +1,51 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "Bash(git:*)",
+      "Bash(docker:*)",
+      "Bash(docker-compose:*)",
+      "Bash(python:*)",
+      "Bash(node:*)",
+      "Bash(java:*)",
+      "Bash(mvn:*)",
+      "WebSearch",
+      "WebFetch",
+      "Read",
+      "Write",
+      "Edit",
+      "Glob",
+      "Grep"
+    ],
+    "deny": [
+      "Bash(rm -rf:*)",
+      "Bash(git push --force:*)",
+      "Bash(git reset --hard:*)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/c/Users/Lvxz/AppData/Local/Programs/Python/Python312/python.exe \"${CLAUDE_PROJECT_DIR}/.claude/scripts/log-change.py\" \"${tool_name}\" \"${file_path}\" \"${CLAUDE_PROJECT_DIR}\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/c/Users/Lvxz/AppData/Local/Programs/Python/Python312/python.exe \"${CLAUDE_PROJECT_DIR}/.claude/scripts/session-summary.py\" \"${CLAUDE_PROJECT_DIR}\""
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+# AI-FMS Error Code Definitions
+# 按业务域划分，所有错误码和消息的权威定义
+#
+# 编码规则：
+#   4xxxx — 客户端错误
+#     40001-40009  Common（通用）
+#     40010-40029  User（用户模块）
+#     40030-40049  Role（角色模块）
+#     40050-40069  Tenant（租户模块）
+#     40100-40119  Auth（认证模块）
+#     40300-40319  Permission（权限模块）
+#     40401-40419  Resource（资源不存在）
+#   5xxxx — 服务端错误
+#     50001-50009  System（系统异常）
+
+common:
+  validation_failed:
+    code: 40001
+    message: "参数校验失败"
+  data_integrity:
+    code: 40001
+    message: "数据完整性冲突"
+  internal_error:
+    code: 50001
+    message: "服务器内部错误"
+
+user:
+  username_duplicate:
+    code: 40002
+    message: "用户名已存在"
+  email_duplicate:
+    code: 40003
+    message: "邮箱已存在"
+  password_too_weak:
+    code: 40010
+    message: "密码强度不足"
+  invalid_state_transition:
+    code: 40011
+    message: "不允许的状态变更"
+  not_found:
+    code: 40401
+    message: "用户不存在"

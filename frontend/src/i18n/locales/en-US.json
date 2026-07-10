@@ -1,0 +1,122 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "retry": "Retry",
+    "back": "Back",
+    "loading": "Loading...",
+    "confirm": "Confirm",
+    "close": "Close"
+  },
+  "menu": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "tenants": "Tenants",
+    "teams": "Teams"
+  },
+  "breadcrumb": {
+    "home": "Home",
+    "users": "User List",
+    "createUser": "Create User",
+    "editUser": "Edit User"
+  },
+  "header": {
+    "language": "Language",
+    "switchLanguage": "Switch Language",
+    "logout": "Logout",
+    "logoutHint": "Auth module is under development. This feature will be available soon.",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "footer": {
+    "copyright": "AI-FMS ©2026 — AI Finding Management System"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "AI-FMS System Overview",
+    "totalUsers": "Total Users",
+    "activeRoles": "Active Roles",
+    "tenants": "Tenants",
+    "teams": "Teams",
+    "welcome": "Welcome to AI-FMS",
+    "description": "AI Finding Management System — implement business modules per AGENTS.md specifications.",
+    "quickActions": "Quick Actions",
+    "viewUsers": "View Users",
+    "createUser": "Create User",
+    "comingSoon": "Coming Soon"
+  },
+  "form": {
+    "section": {
+      "account": "Account Info",
+      "profile": "Personal Info",
+      "status": "Account Status"
+    }
+  },
+  "user": {
+    "title": "Users",
+    "createUser": "Create User",
+    "editUser": "Edit User: {username}",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "displayName": "Display Name",
+    "phone": "Phone",
+    "status": "Status",
+    "created": "Created",
+    "actions": "Actions",
+    "noUsers": "No users found",
+    "userCount": "{count} users",
+    "deleteConfirm": "Delete this user?",
+    "deleteDesc": "This is a soft delete — the user can be recovered.",
+    "searchPlaceholder": "Search by username, email, or name...",
+    "newPassword": "New Password (leave blank to keep current)",
+    "newPasswordPlaceholder": "At least 8 characters",
+    "saveChanges": "Save Changes",
+    "passwordLeaveBlank": "Leave blank to keep current password",
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "deleteSuccess": "User deleted",
+    "usernamePlaceholder": "Enter username, e.g. john_doe",
+    "emailPlaceholder": "Enter email, e.g. john@example.com",
+    "displayNamePlaceholder": "Enter display name (optional)",
+    "phonePlaceholder": "Enter phone number (optional)",
+    "noUsersDesc": "No users yet. Click the button above to create one."
+  },
+  "userStatus": {
+    "ACTIVE": "Active",
+    "LOCKED": "Locked",
+    "DISABLED": "Disabled",
+    "DELETED": "Deleted"
+  },
+  "validation": {
+    "usernameRequired": "Username is required",
+    "usernameLength": "Username must be 3-50 characters",
+    "usernamePattern": "Letters, numbers, and underscores only",
+    "emailRequired": "Email is required",
+    "emailInvalid": "Email must be valid",
+    "emailMax": "Email must be at most 255 characters",
+    "passwordRequired": "Password is required",
+    "passwordLength": "Password must be 8-100 characters",
+    "displayNameMax": "Display name must be at most 100 characters",
+    "phoneMax": "Phone must be at most 30 characters"
+  },
+  "error": {
+    "loadFailed": "Failed to load users",
+    "createFailed": "Failed to create user",
+    "updateFailed": "Failed to update user",
+    "deleteFailed": "Failed to delete user",
+    "40001": "Validation failed",
+    "40002": "Username already exists",
+    "40003": "Email already exists",
+    "40010": "Password too weak",
+    "40011": "Invalid state transition",
+    "40401": "User not found",
+    "50001": "Internal server error",
+    "unknown": "Unknown error"
+  }
+}

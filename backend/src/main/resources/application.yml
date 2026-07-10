@@ -1,0 +1,62 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ai-fms-backend
+
+  # R2DBC PostgreSQL
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/aifms
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    pool:
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+
+  # Flyway (uses JDBC, standard approach)
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/aifms
+    user: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    locations: filesystem:../database/migration
+    baseline-on-migrate: true
+
+  # Redis Reactive
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 5s
+
+# Logging
+logging:
+  level:
+    com.aifms: DEBUG
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql: DEBUG
+    org.springframework.data.redis: DEBUG
+    org.springframework.security: DEBUG
+
+# SpringDoc OpenAPI
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  webjars:
+    prefix: ""
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized

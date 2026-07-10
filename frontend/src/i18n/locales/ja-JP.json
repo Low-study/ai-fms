@@ -1,0 +1,122 @@
+{
+  "common": {
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "search": "検索",
+    "retry": "再試行",
+    "back": "戻る",
+    "loading": "読み込み中...",
+    "confirm": "確認",
+    "close": "閉じる"
+  },
+  "menu": {
+    "dashboard": "ダッシュボード",
+    "users": "ユーザー管理",
+    "roles": "ロール管理",
+    "tenants": "テナント管理",
+    "teams": "チーム管理"
+  },
+  "breadcrumb": {
+    "home": "ホーム",
+    "users": "ユーザー一覧",
+    "createUser": "ユーザー作成",
+    "editUser": "ユーザー編集"
+  },
+  "header": {
+    "language": "言語",
+    "switchLanguage": "言語切替",
+    "logout": "ログアウト",
+    "logoutHint": "Authモジュール開発中のため、この機能は後日リリース予定です。",
+    "profile": "個人設定",
+    "settings": "システム設定"
+  },
+  "footer": {
+    "copyright": "AI-FMS ©2026 — AI指摘管理システム"
+  },
+  "dashboard": {
+    "title": "ダッシュボード",
+    "subtitle": "AI-FMS システム概要",
+    "totalUsers": "ユーザー総数",
+    "activeRoles": "有効なロール",
+    "tenants": "テナント",
+    "teams": "チーム",
+    "welcome": "AI-FMS へようこそ",
+    "description": "AI Finding Management System — AI指摘管理システム。AGENTS.md 仕様に従って業務モジュールを実装してください。",
+    "quickActions": "クイック操作",
+    "viewUsers": "ユーザー一覧",
+    "createUser": "ユーザー作成",
+    "comingSoon": "近日公開"
+  },
+  "form": {
+    "section": {
+      "account": "アカウント情報",
+      "profile": "個人情報",
+      "status": "アカウント状態"
+    }
+  },
+  "user": {
+    "title": "ユーザー管理",
+    "createUser": "ユーザー作成",
+    "editUser": "ユーザー編集: {username}",
+    "username": "ユーザー名",
+    "email": "メールアドレス",
+    "password": "パスワード",
+    "displayName": "表示名",
+    "phone": "電話番号",
+    "status": "ステータス",
+    "created": "作成日時",
+    "actions": "操作",
+    "noUsers": "ユーザーが見つかりません",
+    "userCount": "全 {count} ユーザー",
+    "deleteConfirm": "このユーザーを削除しますか？",
+    "deleteDesc": "ソフト削除 — 復元可能です。",
+    "searchPlaceholder": "ユーザー名、メール、名前で検索...",
+    "newPassword": "新しいパスワード（空白のままなら変更なし）",
+    "newPasswordPlaceholder": "8文字以上",
+    "saveChanges": "変更を保存",
+    "passwordLeaveBlank": "変更しない場合は空白のまま",
+    "createSuccess": "ユーザーを作成しました",
+    "updateSuccess": "ユーザーを更新しました",
+    "deleteSuccess": "ユーザーを削除しました",
+    "usernamePlaceholder": "ユーザー名を入力（例: john_doe）",
+    "emailPlaceholder": "メールアドレスを入力（例: john@example.com）",
+    "displayNamePlaceholder": "表示名を入力（任意）",
+    "phonePlaceholder": "電話番号を入力（任意）",
+    "noUsersDesc": "まだユーザーが作成されていません。上のボタンから作成してください。"
+  },
+  "userStatus": {
+    "ACTIVE": "有効",
+    "LOCKED": "ロック中",
+    "DISABLED": "無効",
+    "DELETED": "削除済"
+  },
+  "validation": {
+    "usernameRequired": "ユーザー名を入力してください",
+    "usernameLength": "ユーザー名は3〜50文字",
+    "usernamePattern": "英数字とアンダースコアのみ",
+    "emailRequired": "メールアドレスを入力してください",
+    "emailInvalid": "メールアドレスの形式が正しくありません",
+    "emailMax": "メールアドレスは最大255文字",
+    "passwordRequired": "パスワードを入力してください",
+    "passwordLength": "パスワードは8〜100文字",
+    "displayNameMax": "表示名は最大100文字",
+    "phoneMax": "電話番号は最大30文字"
+  },
+  "error": {
+    "loadFailed": "ユーザーの読み込みに失敗しました",
+    "createFailed": "ユーザーの作成に失敗しました",
+    "updateFailed": "ユーザーの更新に失敗しました",
+    "deleteFailed": "ユーザーの削除に失敗しました",
+    "40001": "パラメータ検証エラー",
+    "40002": "ユーザー名は既に存在します",
+    "40003": "メールアドレスは既に存在します",
+    "40010": "パスワード強度不足",
+    "40011": "許可されていない状態変更",
+    "40401": "ユーザーが見つかりません",
+    "50001": "サーバー内部エラー",
+    "unknown": "不明なエラー"
+  }
+}
