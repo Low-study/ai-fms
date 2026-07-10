@@ -855,4 +855,5 @@ cd frontend && npm run build
 | [`AGENTS.md`](AGENTS.md) | 技术规范（命名、禁止事项） |
 | [`docs/progress.md`](docs/progress.md) | 项目进度 + 下一步计划 |
 | [`docs/architecture.md`](docs/architecture.md) | 架构决策记录（ADR 001–007） |
+| [`docs/branching-strategy.md`](docs/branching-strategy.md) | Git 分支管理规范 |
 | [`docs/worklog/`](docs/worklog/) | 每日工作日志 |
