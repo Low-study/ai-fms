@@ -21,7 +21,6 @@ export default function IssueDetailPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [similarItems, setSimilarItems] = useState<SimilarItem[]>([]);
-  const [showAllSimilar, setShowAllSimilar] = useState(false);
 
   const i18nError = (err: unknown, fallbackKey: string): string => {
     if (err instanceof ApiError) {
@@ -154,9 +153,8 @@ export default function IssueDetailPage() {
         style={{ marginTop: 16 }}
       >
         {similarItems.length > 0 ? (
-          <>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {(showAllSimilar ? similarItems : similarItems.slice(0, 3)).map((item) => (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxHeight: 320, overflowY: 'auto', paddingRight: 4 }}>
+              {similarItems.map((item) => (
                 <Card
                   key={item.id}
                   size="small"
@@ -186,19 +184,6 @@ export default function IssueDetailPage() {
                 </Card>
               ))}
             </div>
-            {similarItems.length > 3 && (
-              <Button
-                type="link"
-                size="small"
-                onClick={() => setShowAllSimilar(!showAllSimilar)}
-                style={{ marginTop: 8 }}
-              >
-                {showAllSimilar
-                  ? t('issue.detail.collapseSimilar')
-                  : t('issue.detail.expandSimilar', { count: similarItems.length })}
-              </Button>
-            )}
-          </>
         ) : (
           <Empty description={t('issue.detail.noSimilarCases')} />
         )}
