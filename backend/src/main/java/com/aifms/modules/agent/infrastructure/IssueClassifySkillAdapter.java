@@ -21,8 +21,6 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
 
     private static final String TEMPLATE_NAME = "issue_classify_skill";
     private static final int TEMPLATE_VERSION = 1;
-    private static final String DEFAULT_MODEL = "deepseek-chat";
-    private static final double DEFAULT_TEMPERATURE = 0.3;
 
     private final ChatModelPort chatModelPort;
     private final PromptTemplatePort promptTemplatePort;
@@ -44,9 +42,8 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
                     String userPrompt = template.userTemplate() + "\n\n"
                             + "Title: " + issue.title() + "\n"
                             + "Description: " + issue.description();
-                    ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
-                            systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
-                    return chatModelPort.call(request);
+                    return chatModelPort.call(new ChatModelPort.ChatRequest(
+                            systemPrompt, userPrompt, null, 0.3));
                 })
                 .flatMap(response -> Mono.fromCallable(() -> {
                     ClassifiedIssueJson json = objectMapper.readValue(

@@ -25,8 +25,6 @@ public class IssueParseSkillAdapter implements IssueParseSkill {
     private static final Logger log = LoggerFactory.getLogger(IssueParseSkillAdapter.class);
     private static final String TEMPLATE_NAME = "issue_parse_skill";
     private static final int TEMPLATE_VERSION = 1;
-    private static final String DEFAULT_MODEL = "deepseek-chat";
-    private static final double DEFAULT_TEMPERATURE = 0.3;
     private static final int MAX_RETRIES = 2;
 
     private final ChatModelPort chatModelPort;
@@ -60,7 +58,7 @@ public class IssueParseSkillAdapter implements IssueParseSkill {
             log.warn("Parse language mismatch, retry {}/{}: expected={}", retryCount, MAX_RETRIES, expectedLang);
         }
         ChatModelPort.ChatRequest req = new ChatModelPort.ChatRequest(
-                effectiveSys, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
+                effectiveSys, userPrompt, null, 0.3);
         return chatModelPort.call(req).flatMap(resp -> {
             String json = extractJson(resp.content());
             try {

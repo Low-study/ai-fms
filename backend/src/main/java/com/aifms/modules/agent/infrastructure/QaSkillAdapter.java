@@ -24,8 +24,6 @@ public class QaSkillAdapter implements QaSkill {
 
     private static final String TEMPLATE_NAME = "qa_skill";
     private static final int TEMPLATE_VERSION = 1;
-    private static final String DEFAULT_MODEL = "deepseek-chat";
-    private static final double DEFAULT_TEMPERATURE = 0.7;
     private static final int MAX_RETRIES = 2;
 
     private static final Logger log = LoggerFactory.getLogger(QaSkillAdapter.class);
@@ -70,7 +68,7 @@ public class QaSkillAdapter implements QaSkill {
             log.warn("QA language mismatch, retry {}/{}: expected={}", retryCount, MAX_RETRIES, expectedLang);
         }
         return chatModelPort.call(new ChatModelPort.ChatRequest(
-                        effectiveSys, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE))
+                        effectiveSys, userPrompt, null, 0.3))
                 .flatMap(resp -> {
                     String text = extractJson(resp.content());
                     try { text = objectMapper.readValue(text, QaReplyJson.class).reply(); } catch (Exception ignored) {}
