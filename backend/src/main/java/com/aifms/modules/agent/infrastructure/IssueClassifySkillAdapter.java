@@ -3,9 +3,12 @@ package com.aifms.modules.agent.infrastructure;
 import com.aifms.modules.agent.domain.ChatModelPort;
 import com.aifms.modules.agent.domain.ClassifiedIssue;
 import com.aifms.modules.agent.domain.IssueClassifySkill;
+import com.aifms.modules.agent.domain.LanguageGuard;
 import com.aifms.modules.agent.domain.ParsedIssue;
 import com.aifms.modules.agent.domain.PromptTemplatePort;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -19,8 +22,10 @@ import reactor.core.scheduler.Schedulers;
 @Service
 public class IssueClassifySkillAdapter implements IssueClassifySkill {
 
+    private static final Logger log = LoggerFactory.getLogger(IssueClassifySkillAdapter.class);
     private static final String TEMPLATE_NAME = "issue_classify_skill";
     private static final int TEMPLATE_VERSION = 1;
+    private static final int MAX_RETRIES = 2;
 
     private final ChatModelPort chatModelPort;
     private final PromptTemplatePort promptTemplatePort;
@@ -36,15 +41,10 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
 
     @Override
     public Mono<ClassifiedIssue> classify(ParsedIssue issue) {
+        String expectedLang = LanguageGuard.detect(issue.title());
+        String userPrompt = "Title: " + issue.title() + "\nDescription: " + issue.description();
         return promptTemplatePort.findByNameVersion(TEMPLATE_NAME, TEMPLATE_VERSION)
-                .flatMap(template -> {
-                    String systemPrompt = template.systemTemplate();
-                    String userPrompt = template.userTemplate() + "\n\n"
-                            + "Title: " + issue.title() + "\n"
-                            + "Description: " + issue.description();
-                    return chatModelPort.call(new ChatModelPort.ChatRequest(
-                            systemPrompt, userPrompt, null, 0.3));
-                })
+                .flatMap(template -> callAndCheck(template.systemTemplate(), userPrompt, expectedLang, 0))
                 .flatMap(response -> Mono.fromCallable(() -> {
                     ClassifiedIssueJson json = objectMapper.readValue(
                             extractJson(response.content()), ClassifiedIssueJson.class);
@@ -58,6 +58,26 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
                             json.tags()
                     );
                 }).subscribeOn(Schedulers.boundedElastic()));
+    }
+
+    private Mono<ChatModelPort.ChatResponse> callAndCheck(String sysPrompt, String userPrompt,
+                                                          String expectedLang, int retryCount) {
+        String effectiveSys = sysPrompt;
+        if (retryCount > 0) {
+            effectiveSys = sysPrompt + LanguageGuard.retryEmphasis(expectedLang);
+            log.warn("Classify lang mismatch, retry {}/{}: expected={}", retryCount, MAX_RETRIES, expectedLang);
+        }
+        return chatModelPort.call(new ChatModelPort.ChatRequest(effectiveSys, userPrompt, null, 0.3))
+                .flatMap(resp -> {
+                    try {
+                        ClassifiedIssueJson json = objectMapper.readValue(extractJson(resp.content()), ClassifiedIssueJson.class);
+                        String outLang = LanguageGuard.detect(json.priority() != null ? json.priority() : "");
+                        if (!outLang.equals(expectedLang) && retryCount < MAX_RETRIES) {
+                            return callAndCheck(sysPrompt, userPrompt, expectedLang, retryCount + 1);
+                        }
+                    } catch (Exception ignored) {}
+                    return Mono.just(resp);
+                });
     }
 
     /**
