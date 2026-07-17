@@ -42,9 +42,9 @@ public class QaSkillAdapter implements QaSkill {
                 .flatMap(template -> {
                     String systemPrompt = template.systemTemplate();
                     String userPrompt = template.userTemplate()
-                            + "\n\n工单信息：\n"
-                            + "标题：" + issue.issue().title() + "\n"
-                            + "描述：" + issue.issue().description() + "\n"
+                            + "\n\nIssue:\n"
+                            + "Title: " + issue.issue().title() + "\n"
+                            + "Description: " + issue.issue().description() + "\n"
                             + "分类：" + issue.category() + "\n"
                             + "优先级：" + issue.priority() + "\n"
                             + "严重程度：" + issue.severity();

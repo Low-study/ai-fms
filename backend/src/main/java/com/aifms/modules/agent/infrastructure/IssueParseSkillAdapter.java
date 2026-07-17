@@ -41,7 +41,7 @@ public class IssueParseSkillAdapter implements IssueParseSkill {
         return promptTemplatePort.findByNameVersion(TEMPLATE_NAME, TEMPLATE_VERSION)
                 .flatMap(template -> {
                     String systemPrompt = template.systemTemplate();
-                    String userPrompt = template.userTemplate() + "\n\n文档内容：\n" + document.rawText();
+                    String userPrompt = template.userTemplate() + "\n\n" + document.rawText();
                     ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
                             systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
                     return chatModelPort.call(request);

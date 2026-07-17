@@ -43,8 +43,8 @@ public class ReportDraftSkillAdapter implements ReportDraftSkill {
                 .flatMap(template -> {
                     String systemPrompt = template.systemTemplate();
                     String userPrompt = template.userTemplate()
-                            + "\n\n工单信息：\n" + toJson(issue)
-                            + "\n\n相似工单：\n" + toJson(similar);
+                            + "\n\nIssue:\n" + toJson(issue)
+                            + "\n\nSimilar issues:\n" + toJson(similar);
                     ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
                             systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
                     return chatModelPort.call(request);

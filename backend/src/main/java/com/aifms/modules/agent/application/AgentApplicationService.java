@@ -3,6 +3,9 @@ package com.aifms.modules.agent.application;
 import com.aifms.common.Result;
 import com.aifms.modules.agent.domain.AgentExecutionLogPort;
 import com.aifms.modules.agent.domain.AgentExecutionLogPort.AgentExecution;
+import com.aifms.modules.agent.domain.ChatModelPort;
+import com.aifms.modules.agent.domain.ChatModelPort.ChatRequest;
+import com.aifms.modules.agent.domain.ChatModelPort.ChatResponse;
 import com.aifms.modules.agent.domain.ClassifiedIssue;
 import com.aifms.modules.agent.domain.DocumentParserPort;
 import com.aifms.modules.agent.domain.DocumentParserPort.ParsedDocument;
@@ -52,6 +55,7 @@ public class AgentApplicationService {
     private final FileStoragePort fileStoragePort;
     private final FileRepository fileRepository;
     private final ObjectMapper objectMapper;
+    private final ChatModelPort chatModelPort;
 
     public AgentApplicationService(
             IngestSubAgent ingestSubAgent,
@@ -63,7 +67,8 @@ public class AgentApplicationService {
             DocumentParserPort documentParserPort,
             FileStoragePort fileStoragePort,
             FileRepository fileRepository,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            ChatModelPort chatModelPort) {
         this.ingestSubAgent = ingestSubAgent;
         this.ragSubAgent = ragSubAgent;
         this.reportQaSubAgent = reportQaSubAgent;
@@ -74,6 +79,7 @@ public class AgentApplicationService {
         this.fileStoragePort = fileStoragePort;
         this.fileRepository = fileRepository;
         this.objectMapper = objectMapper;
+        this.chatModelPort = chatModelPort;
     }
 
     /**

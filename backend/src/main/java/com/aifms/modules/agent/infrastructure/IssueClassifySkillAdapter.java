@@ -41,9 +41,9 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
         return promptTemplatePort.findByNameVersion(TEMPLATE_NAME, TEMPLATE_VERSION)
                 .flatMap(template -> {
                     String systemPrompt = template.systemTemplate();
-                    String userPrompt = template.userTemplate() + "\n\n工单信息：\n"
-                            + "标题：" + issue.title() + "\n"
-                            + "描述：" + issue.description();
+                    String userPrompt = template.userTemplate() + "\n\n"
+                            + "Title: " + issue.title() + "\n"
+                            + "Description: " + issue.description();
                     ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
                             systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
                     return chatModelPort.call(request);
