@@ -27,9 +27,9 @@ public interface IssueEmbeddingRepository extends ReactiveCrudRepository<IssueEm
      * @return 按相似度降序排列的嵌入实体列表（含 distance 瞬态字段）
      */
     @Query("SELECT ie.id, ie.finding_id, ie.content, ie.model_name, ie.created_at, " +
-            "ie.embedding <-> CAST(:queryEmbedding AS vector) AS distance " +
-            "FROM issue_embeddings ie ORDER BY distance LIMIT :limit")
-    Flux<IssueEmbeddingEntity> findSimilar(String queryEmbedding, int limit);
+            "1.0 - (ie.embedding <-> CAST(:queryEmbedding AS vector)) AS similarity " +
+            "FROM issue_embeddings ie ORDER BY similarity DESC LIMIT :limit")
+    Flux<SimilarEmbeddingRow> findSimilar(String queryEmbedding, int limit);
 
     /**
      * 原生 SQL 插入向量记录（绕过 R2DBC 的 Java String → pgvector 类型映射限制）。

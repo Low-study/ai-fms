@@ -44,6 +44,10 @@ public class IssueEmbeddingEntity {
     @Transient
     private Double distance;
 
+    /** 相似度得分（1-余弦距离，由 SQL 直接计算） */
+    @Transient
+    private Double similarity;
+
     // ── Getters & Setters ──
 
     public UUID getId() { return id; }
@@ -66,4 +70,7 @@ public class IssueEmbeddingEntity {
 
     public Double getDistance() { return distance; }
     public void setDistance(Double distance) { this.distance = distance; }
+
+    public Double getSimilarity() { return similarity; }
+    public void setSimilarity(Double similarity) { this.similarity = similarity; }
 }

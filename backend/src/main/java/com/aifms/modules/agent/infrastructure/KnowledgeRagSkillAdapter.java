@@ -123,13 +123,13 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
      * 通过 findingId 查询对应的指摘记录，组装结果。
      * 若 finding 不存在（孤立记录），跳过该项。
      */
-    private Mono<SimilarIssueItem> mapToSimilarIssueItem(IssueEmbeddingEntity embedding) {
-        return findingRepository.findById(embedding.getFindingId())
+    private Mono<SimilarIssueItem> mapToSimilarIssueItem(SimilarEmbeddingRow row) {
+        return findingRepository.findById(row.getFindingId())
                 .map(finding -> {
-                    double similarity = computeSimilarity(embedding.getDistance());
+                    double similarity = row.getSimilarity();
                     String resolution = finding.getResolution() != null
                             ? finding.getResolution()
-                            : embedding.getContent();
+                            : row.getContent();
 
                     return new SimilarIssueItem(
                             finding.getId().toString(),
