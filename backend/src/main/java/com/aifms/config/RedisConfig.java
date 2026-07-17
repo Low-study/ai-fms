@@ -11,7 +11,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
  * Redis Reactive configuration.
  * Provides a ReactiveRedisTemplate for reactive Redis operations.
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 public class RedisConfig {
 
     @Bean

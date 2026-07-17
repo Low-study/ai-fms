@@ -4,6 +4,8 @@ import com.aifms.modules.task.domain.TaskProgress;
 import com.aifms.modules.task.domain.TaskService;
 import com.aifms.modules.task.domain.TaskStatus;
 import com.aifms.modules.task.domain.TaskTicket;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
@@ -41,9 +43,11 @@ public class RedisStreamsTaskService implements TaskService<Object> {
     private static final String PROGRESS_CHANNEL_PREFIX = "task-progress:";
 
     private final ReactiveRedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
 
     public RedisStreamsTaskService(ReactiveRedisTemplate<String, Object> redisTemplate) {
         this.redisTemplate = redisTemplate;
+        this.objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
     }
 
     // ── submit ──
@@ -74,7 +78,11 @@ public class RedisStreamsTaskService implements TaskService<Object> {
         Map<String, Object> recordBody = new LinkedHashMap<>();
         recordBody.put("_ticketId", ticketId);
         recordBody.put("_payloadType", ticket.getPayloadType());
-        recordBody.put("_payload", payload);
+        try {
+            recordBody.put("_payload", objectMapper.writeValueAsString(payload));
+        } catch (Exception e) {
+            return Mono.error(new RuntimeException("payload 序列化失败: " + e.getMessage(), e));
+        }
 
         @SuppressWarnings({"unchecked", "rawtypes"})
         MapRecord<String, Object, Object> record = (MapRecord) StreamRecords

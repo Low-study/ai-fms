@@ -125,7 +125,7 @@ export default function IssueListPage() {
       dataIndex: 'createdAt',
       key: 'createdAt',
       width: 140,
-      render: (v: string) => v || '-',
+      render: (v: string) => v ? new Date(v).toLocaleDateString() : '-',
     },
   ];
 

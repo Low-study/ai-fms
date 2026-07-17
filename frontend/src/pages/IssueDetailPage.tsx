@@ -132,7 +132,7 @@ export default function IssueDetailPage() {
             <StatusTag status={finding.status} />
           </Descriptions.Item>
           <Descriptions.Item label={t('issue.detail.field.createdAt')}>
-            {finding.createdAt}
+            {finding.createdAt ? new Date(finding.createdAt).toLocaleString() : '-'}
           </Descriptions.Item>
         </Descriptions>
       </Card>
@@ -153,7 +153,12 @@ export default function IssueDetailPage() {
         style={{ marginTop: 16 }}
       >
         {finding.reportDraft ? (
-          <Paragraph>{finding.reportDraft}</Paragraph>
+          <Typography.Paragraph
+            ellipsis={{ rows: 6, expandable: true, symbol: t('common.expand') }}
+            style={{ whiteSpace: 'pre-wrap', marginBottom: 0 }}
+          >
+            {finding.reportDraft}
+          </Typography.Paragraph>
         ) : (
           <Empty description={t('issue.detail.noSuggestion')} />
         )}

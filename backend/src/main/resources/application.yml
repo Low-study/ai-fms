@@ -5,11 +5,15 @@ spring:
   application:
     name: ai-fms-backend
 
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
   # R2DBC PostgreSQL
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/aifms
-    username: ${DB_USERNAME:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: r2dbc:postgresql://postgres:postgres@localhost:5432/aifms
+    username: postgres
+    password: postgres
     pool:
       initial-size: 5
       max-size: 20
@@ -66,9 +70,9 @@ ai:
     model: ${LLM_MODEL:deepseek-chat}
     temperature: 0.3
   embedding:
-    base-url: ${EMBEDDING_BASE_URL:https://api.openai.com}
-    api-key: ${EMBEDDING_API_KEY:}
-    model: ${EMBEDDING_MODEL:text-embedding-3-large}
+    base-url: ${EMBEDDING_BASE_URL:http://localhost:11434/v1}
+    api-key: ${EMBEDDING_API_KEY:ollama}
+    model: ${EMBEDDING_MODEL:bge-m3}
   ocr:
     provider: ${OCR_PROVIDER:mock}
     api-key: ${OCR_API_KEY:}

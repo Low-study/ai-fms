@@ -6,6 +6,8 @@ import com.aifms.modules.agent.domain.ParsedIssue;
 import com.aifms.modules.agent.domain.SimilarIssueItem;
 import com.aifms.modules.agent.domain.SimilarIssues;
 import com.aifms.modules.finding.infrastructure.FindingRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -28,6 +30,8 @@ import java.util.List;
  */
 @Service
 public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
+
+    private static final Logger log = LoggerFactory.getLogger(KnowledgeRagSkillAdapter.class);
 
     private final EmbeddingModelPort embeddingModelPort;
     private final IssueEmbeddingRepository issueEmbeddingRepository;
@@ -53,6 +57,10 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(text -> embeddingModelPort.embed(text)
                         .flatMap(this::searchAndMapResults)
+                        .onErrorResume(e -> {
+                            log.warn("RAG 检索失败（embedding 不可用），降级返回空结果: {}", e.getMessage());
+                            return Mono.just(new SimilarIssues(List.of()));
+                        })
                 );
     }
 

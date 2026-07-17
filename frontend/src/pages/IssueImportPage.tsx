@@ -5,143 +5,143 @@ import {
   Button,
   Card,
   Result,
-  Spin,
   Typography,
   Space,
+  Steps,
 } from 'antd';
 import type { UploadProps } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
+import { InboxOutlined, LoadingOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import PageContainer from '../components/PageContainer';
-import SseProgress from '../components/SseProgress';
 import { issueApi } from '../api/issueApi';
-import type { ImportTicketResponse } from '../api/issueApi';
 
 const { Dragger } = Upload;
-const { Text, Paragraph } = Typography;
+const { Paragraph } = Typography;
 
 type ImportState = 'idle' | 'uploading' | 'processing' | 'complete' | 'error';
+
+interface StepInfo {
+  key: string;
+  label: string;
+  status: 'wait' | 'process' | 'finish' | 'error';
+}
+
+const STEP_ORDER = ['ingest', 'rag', 'reportQa'];
 
 export default function IssueImportPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
   const [importState, setImportState] = useState<ImportState>('idle');
-  const [issueId, setIssueId] = useState<string | null>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [uploadingFileName, setUploadingFileName] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [steps, setSteps] = useState<StepInfo[]>([
+    { key: 'ingest', label: t('component.sse.step.parse'), status: 'wait' },
+    { key: 'rag', label: t('component.sse.step.rag'), status: 'wait' },
+    { key: 'reportQa', label: t('component.sse.step.report'), status: 'wait' },
+  ]);
+  const [resultIssueId, setResultIssueId] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const eventSourceRef = useRef<EventSource | null>(null);
-
-  const closeEventSource = useCallback(() => {
-    if (eventSourceRef.current) {
-      eventSourceRef.current.close();
-      eventSourceRef.current = null;
-    }
+  const updateStep = useCallback((stepName: string, percentage: number) => {
+    setSteps((prev) => {
+      const normalizedName = stepName === 'reportQa' ? 'reportQa' : (stepName === 'rag' ? 'rag' : 'ingest');
+      const idx = STEP_ORDER.indexOf(normalizedName);
+      if (idx < 0) return prev;
+      return prev.map((s, i) => {
+        if (i < idx) return { ...s, status: 'finish' as const };
+        if (i === idx) {
+          if (percentage >= 80 || (stepName === 'ingest' && percentage >= 40)) return { ...s, status: 'finish' as const };
+          return { ...s, status: 'process' as const };
+        }
+        return s;
+      });
+    });
   }, []);
-
-  const startProcessing = useCallback(
-    (ticketResponse: ImportTicketResponse) => {
-      closeEventSource();
-
-      setImportState('processing');
-      setErrorMessage(null);
-
-      const es = new EventSource(
-        `/api/v1/agents/import/stream?ticket=${ticketResponse.ticketId}`,
-      );
-      eventSourceRef.current = es;
-    },
-    [closeEventSource],
-  );
-
-  const handleComplete = useCallback(
-    (issueIdFromEvent?: string) => {
-      closeEventSource();
-
-      // Try to extract issueId from SSE done event data
-      const resolvedIssueId = issueIdFromEvent ?? 'unknown';
-      setIssueId(resolvedIssueId);
-      setImportState('complete');
-    },
-    [closeEventSource],
-  );
-
-  const handleError = useCallback(
-    (errMsg: string) => {
-      closeEventSource();
-      setErrorMessage(errMsg);
-      setImportState('error');
-    },
-    [closeEventSource],
-  );
 
   const handleRetry = useCallback(() => {
+    if (abortRef.current) abortRef.current.abort();
     setImportState('idle');
-    setIssueId(null);
-    setErrorMessage(null);
     setUploadingFileName(null);
+    setErrorMessage(null);
+    setResultIssueId(null);
+    setSteps((prev) => prev.map((s) => ({ ...s, status: 'wait' as const })));
   }, []);
 
-  /**
-   * Prevent default Ant Design upload — we handle it manually via issueApi.
-   */
-  const beforeUpload: UploadProps['beforeUpload'] = useCallback(
+  const startImport = useCallback(
     async (file: File) => {
       setUploadingFileName(file.name);
       setImportState('uploading');
       setErrorMessage(null);
 
       try {
-        const ticketResponse = await issueApi.import(file);
-        startProcessing(ticketResponse);
+        const reader = await issueApi.importStream(file);
+        setImportState('processing');
+
+        let latestIssueId: string | null = null;
+        for await (const event of issueApi.parseSseStream(reader)) {
+          try {
+            const payload = JSON.parse(event.data);
+            const stepName: string = payload.stepName || payload.step_name || event.type;
+
+            if (stepName === 'done') {
+              latestIssueId = payload.issueId || payload.findingId;
+              setResultIssueId(latestIssueId);
+              updateStep('reportQa', 100);
+              setImportState('complete');
+              return;
+            }
+
+            if (stepName === 'error' || event.type === 'error') {
+              throw new Error(payload.message || 'Pipeline error');
+            }
+
+            updateStep(event.type || stepName, payload.percentage || 0);
+          } catch (parseErr) {
+            // Skip unparseable events
+          }
+        }
+
+        // Stream ended without done event — still complete if no error
+        setImportState('complete');
       } catch (err: unknown) {
-        const msg =
-          err instanceof Error ? err.message : t('issue.import.error');
+        const msg = err instanceof Error ? err.message : t('issue.import.error');
         setErrorMessage(msg);
         setImportState('error');
       }
-
-      // Always return false to prevent Ant Design default upload
-      return Upload.LIST_IGNORE;
     },
-    [startProcessing, t],
+    [t, updateStep, importState],
   );
 
-  // ── Render: Loading / Uploading ──
-  if (importState === 'uploading') {
-    return (
-      <PageContainer title={t('issue.import.title')} subtitle={t('issue.import.subtitle')}>
-        <Card>
-          <div style={{ textAlign: 'center', padding: '60px 0' }}>
-            <Spin size="large" />
-            <Paragraph style={{ marginTop: 24 }}>
-              <Text type="secondary">
-                {t('common.loading')}
-              </Text>
-            </Paragraph>
-            {uploadingFileName && (
-              <Text type="secondary" style={{ fontSize: 12 }}>
-                {uploadingFileName}
-              </Text>
-            )}
-          </div>
-        </Card>
-      </PageContainer>
-    );
-  }
+  const beforeUpload: UploadProps['beforeUpload'] = useCallback(
+    (file: File) => {
+      startImport(file);
+      return Upload.LIST_IGNORE;
+    },
+    [startImport],
+  );
 
-  // ── Render: SSE Processing ──
-  if (importState === 'processing' && eventSourceRef.current) {
+  // ── Render: Uploading / Processing ──
+  if (importState === 'uploading' || importState === 'processing') {
     return (
       <PageContainer title={t('issue.import.title')} subtitle={t('issue.import.subtitle')}>
         <Card title={t('issue.import.processing')}>
-          <SseProgress
-            eventSource={eventSourceRef.current}
-            onComplete={() => handleComplete()}
-            onError={(err) => handleError(err)}
-            onRetry={handleRetry}
-          />
+          <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            {uploadingFileName && (
+              <Paragraph type="secondary" style={{ marginBottom: 24 }}>
+                {uploadingFileName}
+              </Paragraph>
+            )}
+            <Steps
+              direction="vertical"
+              current={steps.findIndex((s) => s.status === 'process')}
+              items={steps.map((s) => ({
+                title: s.label,
+                status: s.status === 'finish' ? 'finish' : s.status === 'process' ? 'process' : 'wait',
+                icon: s.status === 'finish' ? <CheckCircleOutlined /> : s.status === 'process' ? <LoadingOutlined /> : undefined,
+              }))}
+            />
+          </div>
         </Card>
       </PageContainer>
     );
@@ -161,9 +161,6 @@ export default function IssueImportPage() {
                 <Button type="primary" onClick={handleRetry}>
                   {t('issue.import.retry')}
                 </Button>
-                <Button onClick={() => navigate('/')}>
-                  {t('common.back')}
-                </Button>
               </Space>,
             ]}
           />
@@ -180,14 +177,14 @@ export default function IssueImportPage() {
           <Result
             status="success"
             title={t('issue.import.complete')}
-            subTitle={uploadingFileName ? `${uploadingFileName}` : undefined}
+            subTitle={uploadingFileName ?? undefined}
             extra={[
               <Space key="actions">
                 <Button
                   type="primary"
-                  onClick={() => navigate(`/issues/${issueId}`)}
+                  onClick={() => navigate(resultIssueId ? `/issues/${resultIssueId}` : '/issues')}
                 >
-                  {t('issue.import.viewDetail')}
+                  {resultIssueId ? t('issue.import.viewDetail') : t('issue.list.title')}
                 </Button>
                 <Button onClick={handleRetry}>
                   {t('issue.import.retry')}
@@ -202,10 +199,7 @@ export default function IssueImportPage() {
 
   // ── Render: Idle / Empty — Upload area ──
   return (
-    <PageContainer
-      title={t('issue.import.title')}
-      subtitle={t('issue.import.subtitle')}
-    >
+    <PageContainer title={t('issue.import.title')} subtitle={t('issue.import.subtitle')}>
       <Card>
         <div style={{ padding: '20px 0' }}>
           <Dragger

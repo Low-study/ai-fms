@@ -1,10 +1,13 @@
 package com.aifms.modules.file.infrastructure;
 
 import com.aifms.modules.file.domain.FileStoragePort;
+import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
+import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,6 +54,19 @@ public class MinioFileStorageAdapter implements FileStoragePort {
                 .credentials(accessKey, secretKey)
                 .build();
         log.info("MinIO 客户端已初始化，端点: {}, 桶: {}", endpoint, bucketName);
+    }
+
+    @PostConstruct
+    void ensureBucketExists() {
+        try {
+            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            if (!exists) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                log.info("MinIO 桶 '{}' 已自动创建", bucketName);
+            }
+        } catch (Exception e) {
+            log.warn("MinIO 桶 '{}' 自动创建失败: {}", bucketName, e.getMessage());
+        }
     }
 
     @Override

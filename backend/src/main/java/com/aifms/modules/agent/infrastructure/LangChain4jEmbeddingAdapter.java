@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import java.time.Duration;
 
 /**
  * LangChain4j Embedding 模型适配器。
@@ -47,6 +48,7 @@ public class LangChain4jEmbeddingAdapter implements EmbeddingModelPort {
                     embeddingModel.embed(TextSegment.from(text));
 
             return response.content().vector();
-        }).subscribeOn(Schedulers.boundedElastic());
+        }).subscribeOn(Schedulers.boundedElastic())
+                .timeout(Duration.ofSeconds(10));
     }
 }

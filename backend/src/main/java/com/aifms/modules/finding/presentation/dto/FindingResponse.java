@@ -1,6 +1,7 @@
 package com.aifms.modules.finding.presentation.dto;
 
 import com.aifms.modules.finding.domain.Finding;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -26,7 +27,9 @@ public class FindingResponse {
     private String reportDraft;
     private String qaReply;
     private String resolution;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant createdAt;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "UTC")
     private Instant updatedAt;
 
     /**

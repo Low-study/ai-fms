@@ -1,0 +1,5 @@
+Newly onboarded team members cannot access the project dashboard.
+HR confirmed their accounts were created yesterday with role "Developer".
+They see "403 Forbidden" when trying to access /projects/active.
+Existing team members with same role have no issues.
+We suspect a bug in the role-based access control introduced in last deployment.
