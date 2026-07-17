@@ -186,6 +186,7 @@
       "noSimilarCases": "過去の類似事例はありません",
       "suggestion": "処理提案",
       "noSuggestion": "処理提案はありません",
+    "qaReply": "QA 返信",
       "loading": "読み込み中...",
       "error": "読み込み失敗",
       "retry": "再試行",

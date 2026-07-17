@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { Card, Descriptions, Alert, Button, Skeleton, Empty, Typography, Space } from 'antd';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { findingApi } from '../api/findingApi';
 import { ApiError } from '../api/client';
 import StatusTag from '../components/StatusTag';
 import type { Finding } from '../types/finding';
 
-const { Title, Paragraph } = Typography;
+const { Title } = Typography;
+const { Paragraph } = Typography;
 
 export default function IssueDetailPage() {
   const { t } = useTranslation();
@@ -153,16 +156,30 @@ export default function IssueDetailPage() {
         style={{ marginTop: 16 }}
       >
         {finding.reportDraft ? (
-          <Typography.Paragraph
-            ellipsis={{ rows: 6, expandable: true, symbol: t('common.expand') }}
-            style={{ whiteSpace: 'pre-wrap', marginBottom: 0 }}
-          >
-            {finding.reportDraft}
-          </Typography.Paragraph>
+          <div className="markdown-body" style={{ maxHeight: 400, overflow: 'auto' }}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {finding.reportDraft}
+            </ReactMarkdown>
+          </div>
         ) : (
           <Empty description={t('issue.detail.noSuggestion')} />
         )}
       </Card>
+
+      {/* QA Reply */}
+      {finding.qaReply && (
+        <Card
+          className="form-card"
+          title={t('issue.detail.qaReply')}
+          style={{ marginTop: 16 }}
+        >
+          <div className="markdown-body" style={{ maxHeight: 300, overflow: 'auto' }}>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {finding.qaReply}
+            </ReactMarkdown>
+          </div>
+        </Card>
+      )}
     </div>
   );
 }
