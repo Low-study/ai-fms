@@ -204,10 +204,10 @@ export default function IssueImportPage() {
         <div style={{ padding: '20px 0' }}>
           <Dragger
             name="file"
-            multiple={false}
+            multiple={true}
             accept=".txt,.pdf,.png,.jpg"
             beforeUpload={beforeUpload}
-            showUploadList={false}
+            showUploadList={true}
           >
             <p className="ant-upload-drag-icon">
               <InboxOutlined />
