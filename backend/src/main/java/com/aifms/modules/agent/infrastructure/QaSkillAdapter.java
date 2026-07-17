@@ -45,9 +45,9 @@ public class QaSkillAdapter implements QaSkill {
                             + "\n\nIssue:\n"
                             + "Title: " + issue.issue().title() + "\n"
                             + "Description: " + issue.issue().description() + "\n"
-                            + "分类：" + issue.category() + "\n"
-                            + "优先级：" + issue.priority() + "\n"
-                            + "严重程度：" + issue.severity();
+                            + "Category: " + issue.category() + "\n"
+                            + "Priority: " + issue.priority() + "\n"
+                            + "Severity: " + issue.severity();
                     ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
                             systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
                     return chatModelPort.call(request);
