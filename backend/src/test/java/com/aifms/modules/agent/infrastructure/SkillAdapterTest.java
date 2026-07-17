@@ -212,7 +212,7 @@ class SkillAdapterTest {
 
             when(embeddingModelPort.embed("测试标题 测试描述"))
                     .thenReturn(Mono.just(new float[]{0.1f, 0.2f, 0.3f}));
-            when(issueEmbeddingRepository.findSimilar(any(), anyInt()))
+            when(issueEmbeddingRepository.findSimilar(any(), anyInt(), any()))
                     .thenReturn(Flux.empty());
 
             Mono<SimilarIssues> result = knowledgeRagSkillAdapter.retrieveSimilar(null, issue);

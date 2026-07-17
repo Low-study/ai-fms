@@ -66,9 +66,9 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
                                 return issueEmbeddingRepository.insertEmbedding(
                                         embedId, findingId, content, vectorStr, "bge-m3",
                                         java.time.Instant.now())
-                                        .then(searchAndMapResults(embedding));
+                                        .then(searchAndMapResults(embedding, findingId));
                             }
-                            return searchAndMapResults(embedding);
+                            return searchAndMapResults(embedding, findingId);
                         })
                         .onErrorResume(e -> {
                             log.warn("RAG 检索失败，降级返回空结果: {}", e.getMessage());
@@ -100,10 +100,11 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
      * 将 {@code float[]} 转换为 pgvector 兼容格式，
      * 查询相似嵌入记录，再关联 findings 表获取完整信息。
      */
-    private Mono<SimilarIssues> searchAndMapResults(float[] embedding) {
+    private Mono<SimilarIssues> searchAndMapResults(float[] embedding, UUID excludeId) {
         String pgVector = convertToPgVector(embedding);
+        UUID effectiveExclude = excludeId != null ? excludeId : UUID.randomUUID();
 
-        return issueEmbeddingRepository.findSimilar(pgVector, 5)
+        return issueEmbeddingRepository.findSimilar(pgVector, 5, effectiveExclude)
                 .flatMap(this::mapToSimilarIssueItem)
                 .collectList()
                 .map(SimilarIssues::new)
