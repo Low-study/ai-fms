@@ -17,7 +17,10 @@
     "users": "用户管理",
     "roles": "角色管理",
     "tenants": "租户管理",
-    "teams": "团队管理"
+    "teams": "团队管理",
+    "issueManagement": "指摘管理",
+    "issueList": "指摘一览",
+    "issueImport": "导入指摘"
   },
   "breadcrumb": {
     "home": "首页",
@@ -104,6 +107,98 @@
     "passwordLength": "密码需 8-100 个字符",
     "displayNameMax": "显示名称最多 100 个字符",
     "phoneMax": "手机号最多 30 个字符"
+  },
+  "component": {
+    "status": {
+      "OPEN": "待处理",
+      "ANALYZING": "分析中",
+      "CLASSIFIED": "已分类",
+      "RESOLVED": "已解决",
+      "CLOSED": "已关闭",
+      "ERROR": "异常"
+    },
+    "empty": {
+      "title": "暂无数据",
+      "description": "当前没有可显示的内容"
+    },
+  "error": {
+      "title": "加载失败",
+      "retry": "重试"
+    },
+    "table": {
+      "empty": "暂无数据",
+      "loading": "加载中...",
+      "error": "数据加载失败"
+    },
+    "sse": {
+      "step": {
+        "parse": "文件解析",
+        "classify": "AI 分类",
+        "rag": "RAG 检索",
+        "report": "报告生成",
+        "qa": "质量审核"
+      },
+      "complete": "处理完成",
+      "error": "处理失败"
+    },
+    "confirm": {
+      "title": "确认操作",
+      "cancel": "取消",
+      "ok": "确定"
+    }
+  },
+  "issue": {
+    "list": {
+      "title": "指摘一览",
+      "searchPlaceholder": "搜索指摘标题...",
+      "importButton": "导入指摘",
+      "empty": "暂无指摘",
+      "error": "加载指摘失败",
+      "retry": "重试",
+      "columns": {
+        "title": "标题",
+        "category": "分类",
+        "priority": "优先级",
+        "severity": "严重程度",
+        "status": "状态",
+        "system": "系统",
+        "suggestion": "处理建议",
+        "createdAt": "创建时间"
+      }
+    },
+    "import": {
+      "title": "导入指摘",
+      "subtitle": "上传文件，AI 将自动解析和分类",
+      "uploadHint": "点击或拖拽文件到此区域",
+      "uploadFormat": "支持 TXT、PDF、PNG、JPG 格式",
+      "processing": "AI 正在处理中...",
+      "complete": "处理完成",
+      "viewDetail": "查看指摘详情",
+      "error": "处理失败",
+      "retry": "重新上传"
+    },
+    "detail": {
+      "title": "指摘详情",
+      "notFound": "指摘不存在",
+      "basicInfo": "基本信息",
+      "similarCases": "相似案例",
+      "noSimilarCases": "暂无历史相似案例",
+      "suggestion": "处理建议",
+      "noSuggestion": "暂无处理建议",
+      "loading": "加载中...",
+      "error": "加载失败",
+      "retry": "重试",
+      "field": {
+        "category": "分类",
+        "priority": "优先级",
+        "severity": "严重程度",
+        "system": "所属系统",
+        "assignee": "负责人",
+        "tags": "标签",
+        "status": "状态",
+        "createdAt": "创建时间"
+      }
+    }
   },
   "error": {
     "loadFailed": "加载用户失败",

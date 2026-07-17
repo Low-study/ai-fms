@@ -17,7 +17,10 @@
     "users": "ユーザー管理",
     "roles": "ロール管理",
     "tenants": "テナント管理",
-    "teams": "チーム管理"
+    "teams": "チーム管理",
+    "issueManagement": "指摘管理",
+    "issueList": "指摘一覧",
+    "issueImport": "指摘インポート"
   },
   "breadcrumb": {
     "home": "ホーム",
@@ -104,6 +107,98 @@
     "passwordLength": "パスワードは8〜100文字",
     "displayNameMax": "表示名は最大100文字",
     "phoneMax": "電話番号は最大30文字"
+  },
+  "component": {
+    "status": {
+      "OPEN": "未処理",
+      "ANALYZING": "分析中",
+      "CLASSIFIED": "分類済",
+      "RESOLVED": "解決済",
+      "CLOSED": "完了",
+      "ERROR": "エラー"
+    },
+    "empty": {
+      "title": "データなし",
+      "description": "表示できるデータがありません"
+    },
+  "error": {
+      "title": "読み込み失敗",
+      "retry": "再試行"
+    },
+    "table": {
+      "empty": "データなし",
+      "loading": "読み込み中...",
+      "error": "データの読み込みに失敗しました"
+    },
+    "sse": {
+      "step": {
+        "parse": "ファイル解析",
+        "classify": "AI分類",
+        "rag": "RAG検索",
+        "report": "レポート生成",
+        "qa": "品質チェック"
+      },
+      "complete": "処理完了",
+      "error": "処理失敗"
+    },
+    "confirm": {
+      "title": "確認",
+      "cancel": "キャンセル",
+      "ok": "OK"
+    }
+  },
+  "issue": {
+    "list": {
+      "title": "指摘一覧",
+      "searchPlaceholder": "タイトルで検索...",
+      "importButton": "指摘をインポート",
+      "empty": "指摘はまだありません",
+      "error": "指摘の読み込みに失敗しました",
+      "retry": "再試行",
+      "columns": {
+        "title": "タイトル",
+        "category": "カテゴリ",
+        "priority": "優先度",
+        "severity": "重要度",
+        "status": "ステータス",
+        "system": "システム",
+        "suggestion": "改善提案",
+        "createdAt": "作成日時"
+      }
+    },
+    "import": {
+      "title": "指摘インポート",
+      "subtitle": "ファイルをアップロードすると、AIが自動的に解析・分類します",
+      "uploadHint": "クリックまたはファイルをドラッグ",
+      "uploadFormat": "TXT、PDF、PNG、JPG形式に対応",
+      "processing": "AI処理中...",
+      "complete": "処理完了",
+      "viewDetail": "指摘詳細を表示",
+      "error": "処理失敗",
+      "retry": "再アップロード"
+    },
+    "detail": {
+      "title": "指摘詳細",
+      "notFound": "指摘が見つかりません",
+      "basicInfo": "基本情報",
+      "similarCases": "類似事例",
+      "noSimilarCases": "過去の類似事例はありません",
+      "suggestion": "処理提案",
+      "noSuggestion": "処理提案はありません",
+      "loading": "読み込み中...",
+      "error": "読み込み失敗",
+      "retry": "再試行",
+      "field": {
+        "category": "カテゴリ",
+        "priority": "優先度",
+        "severity": "重要度",
+        "system": "所属システム",
+        "assignee": "担当者",
+        "tags": "タグ",
+        "status": "ステータス",
+        "createdAt": "作成日時"
+      }
+    }
   },
   "error": {
     "loadFailed": "ユーザーの読み込みに失敗しました",

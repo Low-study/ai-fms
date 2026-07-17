@@ -17,7 +17,10 @@
     "users": "Users",
     "roles": "Roles",
     "tenants": "Tenants",
-    "teams": "Teams"
+    "teams": "Teams",
+    "issueManagement": "Issue Management",
+    "issueList": "Issue List",
+    "issueImport": "Import Issue"
   },
   "breadcrumb": {
     "home": "Home",
@@ -104,6 +107,98 @@
     "passwordLength": "Password must be 8-100 characters",
     "displayNameMax": "Display name must be at most 100 characters",
     "phoneMax": "Phone must be at most 30 characters"
+  },
+  "component": {
+    "status": {
+      "OPEN": "Open",
+      "ANALYZING": "Analyzing",
+      "CLASSIFIED": "Classified",
+      "RESOLVED": "Resolved",
+      "CLOSED": "Closed",
+      "ERROR": "Error"
+    },
+    "empty": {
+      "title": "No Data",
+      "description": "There is nothing to display"
+    },
+  "error": {
+      "title": "Load Failed",
+      "retry": "Retry"
+    },
+    "table": {
+      "empty": "No data",
+      "loading": "Loading...",
+      "error": "Failed to load data"
+    },
+    "sse": {
+      "step": {
+        "parse": "File Parsing",
+        "classify": "AI Classification",
+        "rag": "RAG Retrieval",
+        "report": "Report Generation",
+        "qa": "QA Review"
+      },
+      "complete": "Processing Complete",
+      "error": "Processing Failed"
+    },
+    "confirm": {
+      "title": "Confirm",
+      "cancel": "Cancel",
+      "ok": "OK"
+    }
+  },
+  "issue": {
+    "list": {
+      "title": "Issue List",
+      "searchPlaceholder": "Search by title...",
+      "importButton": "Import Issue",
+      "empty": "No issues found",
+      "error": "Failed to load issues",
+      "retry": "Retry",
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "priority": "Priority",
+        "severity": "Severity",
+        "status": "Status",
+        "system": "System",
+        "suggestion": "Suggestion",
+        "createdAt": "Created At"
+      }
+    },
+    "import": {
+      "title": "Import Issue",
+      "subtitle": "Upload a file and AI will automatically parse and classify",
+      "uploadHint": "Click or drag file to this area",
+      "uploadFormat": "Supports TXT, PDF, PNG, JPG formats",
+      "processing": "AI processing...",
+      "complete": "Processing Complete",
+      "viewDetail": "View Issue Detail",
+      "error": "Processing Failed",
+      "retry": "Re-upload"
+    },
+    "detail": {
+      "title": "Issue Detail",
+      "notFound": "Issue not found",
+      "basicInfo": "Basic Information",
+      "similarCases": "Similar Cases",
+      "noSimilarCases": "No similar cases found",
+      "suggestion": "Processing Suggestion",
+      "noSuggestion": "No suggestion available",
+      "loading": "Loading...",
+      "error": "Failed to load",
+      "retry": "Retry",
+      "field": {
+        "category": "Category",
+        "priority": "Priority",
+        "severity": "Severity",
+        "system": "System",
+        "assignee": "Assignee",
+        "tags": "Tags",
+        "status": "Status",
+        "createdAt": "Created At"
+      }
+    }
   },
   "error": {
     "loadFailed": "Failed to load users",

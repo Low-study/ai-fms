@@ -13,6 +13,8 @@ import {
   GlobalOutlined,
   LogoutOutlined,
   SettingOutlined,
+  UploadOutlined,
+  UnorderedListOutlined,
 } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { SUPPORTED_LANGS, type SupportedLang } from '../i18n';
@@ -34,6 +36,14 @@ export default function MainLayout() {
     { key: '/roles', icon: <SafetyOutlined />, label: t('menu.roles'), disabled: true },
     { key: '/tenants', icon: <BankOutlined />, label: t('menu.tenants'), disabled: true },
     { key: '/teams', icon: <TeamOutlined />, label: t('menu.teams'), disabled: true },
+    {
+      type: 'group',
+      label: t('menu.issueManagement'),
+      children: [
+        { key: '/issues', icon: <UnorderedListOutlined />, label: t('menu.issueList') },
+        { key: '/issues/import', icon: <UploadOutlined />, label: t('menu.issueImport') },
+      ],
+    },
   ];
 
   /** 根据当前路径动态生成面包屑 */

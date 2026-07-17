@@ -1,0 +1,8 @@
+spring:
+  flyway:
+    enabled: false
+  r2dbc:
+    pool:
+      initial-size: 0
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration

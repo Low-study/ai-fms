@@ -1,6 +1,6 @@
 # AI-FMS 项目进度报告
 
-> 更新于 2026-07-11
+> 更新于 2026-07-17
 
 ---
 
@@ -8,7 +8,7 @@
 
 **AI-FMS（AI Finding Management System）** 是面向客户交付的商业 SaaS 产品，用于 AI 辅助指摘（finding）管理。支持文件导入、AI 解析理解、结构化整理、数据库保存、用户查看与处理的全流程。
 
-当前阶段：**IAM 基础设施搭建期**，已完成用户管理模块（CRUD + 状态机 + 软删除），后续依次实现角色、认证、租户、权限模块。
+当前阶段：**MVP-1 端到端完成**，AI 指摘管理核心流程已打通（文件导入 → AI 解析 → 分类 → RAG → 报告 → QA），后续依次实现角色、认证、租户、权限模块及 MVP-2 增强。
 
 ---
 
@@ -32,6 +32,10 @@ Controller → ApplicationService → DomainService → Repository
 | 通用组件 | `common/` — `Result<T>`, `GlobalExceptionHandler`, `ErrorCodes`, `PasswordHasher` | ✅ |
 | 跨模块共享 | `shared/` | ✅ |
 | **用户模块** | `modules/user/` | ✅ 完整 |
+| **Finding 模块** | `modules/finding/` | ✅ MVP-1 完整 |
+| **File 模块** | `modules/file/` | ✅ MVP-1 完整 |
+| **Task 模块** | `modules/task/` | ✅ MVP-1 完整 |
+| **Agent 模块** | `modules/agent/` | ✅ MVP-1 完整 |
 | 角色模块 | `modules/role/` | ⏳ 待实现 |
 | 认证模块 | `modules/auth/` | ⏳ 待实现 |
 | 租户模块 | `modules/tenant/` | ⏳ 待实现 |
@@ -162,7 +166,58 @@ frontend/src/
 
 ---
 
-## 五、下一步计划
+## 五、MVP-1 完成
+
+> AI 指摘管理（Phase-0 + Wave 1-3，27 任务中 16 完成）
+
+### Phase-0 闸门
+
+| 任务 | 状态 |
+|------|------|
+| Spring Boot 3.3.5 → 3.5.16 升级 | ✅ |
+| ContextLoadSmokeTest 通过 | ✅ |
+
+### Wave 1 — 基础设施
+
+| 任务 | 状态 |
+|------|------|
+| ADR-008~013 架构决策记录 | ✅ |
+| V005 Flyway — `findings` 表 | ✅ |
+| V006 Flyway — `pgvector` 扩展 | ✅ |
+| V007 Flyway — `issue_embeddings` 表 | ✅ |
+| V008 Flyway — `prompt_templates` 表 | ✅ |
+| V009 Flyway — `agent_executions` 表 | ✅ |
+| V010 Flyway — `file_uploads` 表 | ✅ |
+| modules/file — `FileStoragePort` + MinIO 适配器 | ✅ |
+| modules/task — `TaskService<T>` + Redis Streams | ✅ |
+| modules/agent — 7 端口抽象 + 5 Skill domain 纯接口 | ✅ |
+| docker-compose — MinIO + pgvector | ✅ |
+| 前端 7 通用组件（PageContainer/SearchForm/DataTable/StatusTag/EmptyState/ConfirmDialog/SseProgress） | ✅ |
+
+### Wave 2 — 业务与 Agent
+
+| 任务 | 状态 |
+|------|------|
+| modules/finding — 四层 DDD CRUD + 状态机 | ✅ |
+| 5 SkillAdapter（parse/classify/rag/report/qa） | ✅ |
+| LangChain4jChatModelAdapter（DeepSeek） | ✅ |
+| TikaDocumentParser + CloudOcrAdapter | ✅ |
+| LangChain4jMcpClient | ✅ |
+| PromptTemplatePortAdapter + V011 seed | ✅ |
+| AgentExecutionLogPortAdapter（fail-safe write） | ✅ |
+| 前端 IssueImportPage（Upload.Dragger + SSE） | ✅ |
+| 前端 IssueDetailPage（结构化 Issue + StatusTag） | ✅ |
+
+### Wave 3 — 端到端
+
+| 任务 | 状态 |
+|------|------|
+| AgentController `POST /api/v1/agents/import` → SSE | ✅ |
+| AgentApplicationService `runSequential`（5 Skill, boundedElastic） | ✅ |
+
+---
+
+## 六、下一步计划
 
 ### P0 — 下一步
 
@@ -174,13 +229,11 @@ frontend/src/
 
 - [ ] 租户管理模块
 - [ ] 权限管理模块
-- [ ] 通用组件抽取（`PageContainer`, `DataTable`, `StatusTag`, `EmptyState`）
 - [ ] E2E 测试（Playwright）
 - [ ] CI/CD（GitHub Actions）
 
 ### P2 — 远期
 
-- [ ] AI 指摘管理（核心业务）
-- [ ] 文档处理流水线
+- [ ] 文档处理流水线（多格式增强）
 - [ ] 审批工作流
 - [ ] 报表与统计

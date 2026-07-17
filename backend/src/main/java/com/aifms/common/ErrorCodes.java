@@ -48,6 +48,17 @@ public final class ErrorCodes {
     /** 用户不存在（软删除视为不存在） */
     public static final int USER_NOT_FOUND = 40401;
 
+    // ── Finding（40070-40089） ──
+
+    /** 指摘不存在（已关闭视为不存在） */
+    public static final int FINDING_NOT_FOUND = 40070;
+
+    /** 不允许的状态变更 */
+    public static final int FINDING_INVALID_STATE = 40071;
+
+    /** 指摘标题重复 */
+    public static final int FINDING_DUPLICATE = 40072;
+
     // ── System（50001-50009） ──
 
     /** 服务器内部错误（未预期异常兜底） */
