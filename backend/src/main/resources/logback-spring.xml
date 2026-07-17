@@ -21,11 +21,13 @@
         </encoder>
     </appender>
 
-    <!-- DEBUG 日志：仅保留 7 天，方便排查 -->
+    <!-- DEBUG 日志：仅 com.aifms 包，DEBUG 级别专有，保留 7 天 -->
     <appender name="FILE-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/debug.log</file>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>DEBUG</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/debug.%d{yyyy-MM-dd}.log</fileNamePattern>
@@ -37,7 +39,7 @@
         </encoder>
     </appender>
 
-    <!-- ERROR 日志：长期保留 -->
+    <!-- ERROR 日志：所有包，ERROR 以上，长期保留 -->
     <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/error.log</file>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
