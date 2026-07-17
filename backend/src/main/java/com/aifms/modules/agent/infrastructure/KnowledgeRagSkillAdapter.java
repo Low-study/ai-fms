@@ -63,9 +63,11 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
                                 UUID embedId = UUID.randomUUID();
                                 String content = queryText.substring(0, Math.min(queryText.length(), 1000));
                                 String vectorStr = convertToPgVector(embedding);
-                                return issueEmbeddingRepository.insertEmbedding(
-                                        embedId, findingId, content, vectorStr, "bge-m3",
-                                        java.time.Instant.now())
+                                // 先清旧 embedding，再插入新的，避免重复导入产生多行
+                                return issueEmbeddingRepository.deleteByFindingId(findingId)
+                                        .then(issueEmbeddingRepository.insertEmbedding(
+                                                embedId, findingId, content, vectorStr, "bge-m3",
+                                                java.time.Instant.now()))
                                         .then(searchAndMapResults(embedding, findingId));
                             }
                             return searchAndMapResults(embedding, findingId);

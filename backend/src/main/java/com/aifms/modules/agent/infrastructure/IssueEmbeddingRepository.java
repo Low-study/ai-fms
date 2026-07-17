@@ -39,4 +39,10 @@ public interface IssueEmbeddingRepository extends ReactiveCrudRepository<IssueEm
             "VALUES (:id, :findingId, :content, CAST(:embedding AS vector), :modelName, :createdAt)")
     Mono<Integer> insertEmbedding(UUID id, UUID findingId, String content, String embedding, String modelName,
                                    java.time.Instant createdAt);
+
+    /**
+     * 删除指定指摘的全部旧 embedding（防止重复导入产生多行）。
+     */
+    @Query("DELETE FROM issue_embeddings WHERE finding_id = :findingId")
+    Mono<Integer> deleteByFindingId(UUID findingId);
 }
