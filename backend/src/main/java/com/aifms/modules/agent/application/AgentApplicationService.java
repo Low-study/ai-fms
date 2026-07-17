@@ -209,9 +209,13 @@ public class AgentApplicationService {
         request.setAssignee(classified.assignee());
         request.setTags(classified.tags() != null ? String.join(",", classified.tags()) : null);
         return findingApplicationService.update(findingId, request)
-                .doOnSuccess(r -> log.info("Ingest 标题已更新: findingId={}, title={}", findingId, classified.issue().title()))
-                .doOnError(e -> log.warn("Ingest 标题更新失败: findingId={}", findingId, e))
-                .onErrorResume(e -> Mono.empty()) // 更新失败不阻塞管道
+                .onErrorResume(e -> {
+                    // 标题冲突时追加时间戳后缀再试一次
+                    log.warn("Ingest 标题更新冲突，追加后缀重试: findingId={}, title={}", findingId, classified.issue().title());
+                    request.setTitle(classified.issue().title() + " (" + System.currentTimeMillis() % 100000 + ")");
+                    return findingApplicationService.update(findingId, request);
+                })
+                .doOnSuccess(r -> log.info("Ingest 标题已更新: findingId={}", findingId))
                 .then();
     }
 

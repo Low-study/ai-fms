@@ -156,6 +156,7 @@
       "empty": "指摘はまだありません",
       "error": "指摘の読み込みに失敗しました",
       "retry": "再試行",
+      "langAll": "すべて",
       "columns": {
         "title": "タイトル",
         "category": "カテゴリ",

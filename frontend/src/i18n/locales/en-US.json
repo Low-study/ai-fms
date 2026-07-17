@@ -156,6 +156,7 @@
       "empty": "No issues found",
       "error": "Failed to load issues",
       "retry": "Retry",
+      "langAll": "All",
       "columns": {
         "title": "Title",
         "category": "Category",

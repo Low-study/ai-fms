@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Table, Button, Input, Space, Tag, Alert, Card, Skeleton } from 'antd';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Table, Button, Input, Space, Tag, Alert, Card, Skeleton, Radio } from 'antd';
 import { ReloadOutlined, InboxOutlined, UploadOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,13 +12,23 @@ import StatusTag from '../components/StatusTag';
 import EmptyState from '../components/EmptyState';
 
 const PRIORITY_COLOR_MAP: Record<string, string> = {
-  '高': 'red',
-  '中': 'orange',
-  '低': 'blue',
+  '高': 'red', 'High': 'red',
+  '中': 'orange', 'Medium': 'orange',
+  '低': 'blue', 'Low': 'blue',
 };
 
+/** 根据标题字符集推断语种 */
+function detectLang(title: string): string {
+  if (!title) return 'en';
+  if (/[\u3040-\u309F\u30A0-\u30FF]/.test(title)) return 'ja';
+  if (/[\u4E00-\u9FFF]/.test(title)) return 'zh';
+  return 'en';
+}
+
+type LangKey = 'all' | 'ja' | 'zh' | 'en';
+
 export default function IssueListPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState<Finding[]>([]);
   const [total, setTotal] = useState(0);
@@ -28,6 +38,10 @@ export default function IssueListPage() {
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [langFilter, setLangFilter] = useState<LangKey>(() => {
+    const uiLang = i18n.language?.split('-')[0] || 'zh';
+    return (uiLang === 'ja' || uiLang === 'zh' || uiLang === 'en') ? uiLang as LangKey : 'zh';
+  });
 
   const i18nError = (err: unknown): string => {
     if (err instanceof ApiError) {
@@ -58,6 +72,11 @@ export default function IssueListPage() {
     setPage(1);
     setSearchText(keyword.trim());
   };
+
+  const filteredItems = useMemo(() => {
+    if (langFilter === 'all') return items;
+    return items.filter(item => detectLang(item.title) === langFilter);
+  }, [items, langFilter]);
 
   const columns: ColumnsType<Finding> = [
     {
@@ -186,9 +205,23 @@ export default function IssueListPage() {
     <PageContainer
       title={t('issue.list.title')}
       extra={
-        <Button type="primary" icon={<UploadOutlined />} onClick={() => navigate('/issues/import')}>
-          {t('issue.list.importButton')}
-        </Button>
+        <Space>
+          <Radio.Group
+            value={langFilter}
+            onChange={(e) => { setLangFilter(e.target.value); setPage(1); }}
+            size="small"
+            optionType="button"
+            buttonStyle="solid"
+          >
+            <Radio.Button value="all">{t('issue.list.langAll')}</Radio.Button>
+            <Radio.Button value="ja">日本語</Radio.Button>
+            <Radio.Button value="zh">中文</Radio.Button>
+            <Radio.Button value="en">English</Radio.Button>
+          </Radio.Group>
+          <Button type="primary" icon={<UploadOutlined />} onClick={() => navigate('/issues/import')}>
+            {t('issue.list.importButton')}
+          </Button>
+        </Space>
       }
     >
       <Card>
@@ -204,7 +237,7 @@ export default function IssueListPage() {
           />
           <Table<Finding>
             columns={columns}
-            dataSource={items}
+            dataSource={filteredItems}
             rowKey="id"
             loading={loading && items.length > 0}
             pagination={{

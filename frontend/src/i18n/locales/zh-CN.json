@@ -156,6 +156,7 @@
       "empty": "暂无指摘",
       "error": "加载指摘失败",
       "retry": "重试",
+      "langAll": "全部",
       "columns": {
         "title": "标题",
         "category": "分类",
