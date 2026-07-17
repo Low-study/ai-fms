@@ -128,6 +128,7 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
      */
     private Mono<SimilarIssueItem> mapToSimilarIssueItem(SimilarEmbeddingRow row) {
         return findingRepository.findById(row.getFindingId())
+                .filter(finding -> finding.getTitle() != null && !finding.getTitle().startsWith("AUTO-IMPORT-"))
                 .map(finding -> {
                     double similarity = row.getSimilarity();
                     String resolution = finding.getResolution() != null

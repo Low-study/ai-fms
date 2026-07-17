@@ -155,7 +155,9 @@ public class AgentApplicationService {
                 .then(ingestSubAgent.parseAndClassifyReactive(doc)
                         .subscribeOn(Schedulers.boundedElastic()))
                 .flatMap(classified ->
-                        publishProgress(ticketId, "ingest", 40, "IngestSubAgent 完成")
+                        // 先更新 finding 的标题/描述/分类（Ingest 产物），再跑 RAG
+                        updateFindingFromIngest(findingId, classified)
+                                .then(publishProgress(ticketId, "ingest", 40, "IngestSubAgent 完成"))
                                 .then(logStep(execution.id(), "subagent_complete", "ingest",
                                         toJson("classified", classified)))
                                 // SubAgent 2: RagSubAgent — 相似工单检索 (40% → 60%)
@@ -190,6 +192,27 @@ public class AgentApplicationService {
                                                 )
                                 )
                 );
+    }
+
+    /**
+     * Ingest 完成后先更新 finding 标题/描述/分类，再跑后续 RAG/Report 管道。
+     * 这样 RAG 存嵌入时 finding 已有正确的 AI 标题，不会出现 AUTO-IMPORT 残骸。
+     */
+    private Mono<Void> updateFindingFromIngest(UUID findingId, ClassifiedIssue classified) {
+        UpdateFindingRequest request = new UpdateFindingRequest();
+        request.setTitle(classified.issue().title());
+        request.setDescription(classified.issue().description());
+        request.setCategory(classified.category());
+        request.setPriority(classified.priority());
+        request.setSeverity(classified.severity());
+        request.setSystem(classified.system());
+        request.setAssignee(classified.assignee());
+        request.setTags(classified.tags() != null ? String.join(",", classified.tags()) : null);
+        return findingApplicationService.update(findingId, request)
+                .doOnSuccess(r -> log.info("Ingest 标题已更新: findingId={}, title={}", findingId, classified.issue().title()))
+                .doOnError(e -> log.warn("Ingest 标题更新失败: findingId={}", findingId, e))
+                .onErrorResume(e -> Mono.empty()) // 更新失败不阻塞管道
+                .then();
     }
 
     /**
