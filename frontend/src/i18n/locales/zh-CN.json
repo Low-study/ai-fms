@@ -184,6 +184,8 @@
       "basicInfo": "基本信息",
       "similarCases": "相似案例",
       "noSimilarCases": "暂无历史相似案例",
+      "expandSimilar": "展开全部 {{count}} 条",
+      "collapseSimilar": "收起",
       "suggestion": "处理建议",
       "noSuggestion": "暂无处理建议",
     "qaReply": "QA 回复",

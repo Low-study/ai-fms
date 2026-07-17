@@ -184,6 +184,8 @@
       "basicInfo": "Basic Information",
       "similarCases": "Similar Cases",
       "noSimilarCases": "No similar cases found",
+      "expandSimilar": "Show all {{count}}",
+      "collapseSimilar": "Collapse",
       "suggestion": "Processing Suggestion",
       "noSuggestion": "No suggestion available",
     "qaReply": "QA Reply",

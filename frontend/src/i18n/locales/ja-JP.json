@@ -184,6 +184,8 @@
       "basicInfo": "基本情報",
       "similarCases": "類似事例",
       "noSimilarCases": "過去の類似事例はありません",
+      "expandSimilar": "全 {{count}} 件を表示",
+      "collapseSimilar": "折りたたむ",
       "suggestion": "処理提案",
       "noSuggestion": "処理提案はありません",
     "qaReply": "QA 返信",

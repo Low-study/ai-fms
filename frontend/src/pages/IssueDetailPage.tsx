@@ -21,6 +21,7 @@ export default function IssueDetailPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [similarItems, setSimilarItems] = useState<SimilarItem[]>([]);
+  const [showAllSimilar, setShowAllSimilar] = useState(false);
 
   const i18nError = (err: unknown, fallbackKey: string): string => {
     if (err instanceof ApiError) {
@@ -153,33 +154,51 @@ export default function IssueDetailPage() {
         style={{ marginTop: 16 }}
       >
         {similarItems.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {similarItems.map((item) => (
-              <Card
-                key={item.id}
+          <>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              {(showAllSimilar ? similarItems : similarItems.slice(0, 3)).map((item) => (
+                <Card
+                  key={item.id}
+                  size="small"
+                  hoverable
+                  onClick={() => navigate(`/issues/${item.id}`)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <strong>{item.title}</strong>
+                    <span style={{
+                      color: item.similarity >= 0.7 ? '#52c41a' : item.similarity >= 0.4 ? '#fa8c16' : '#999',
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}>
+                      {Math.round(item.similarity * 100)}%
+                    </span>
+                  </div>
+                  {item.resolution && (
+                    <Paragraph
+                      type="secondary"
+                      style={{ marginTop: 4, marginBottom: 0, fontSize: 13 }}
+                      ellipsis={{ rows: 2 }}
+                    >
+                      {item.resolution}
+                    </Paragraph>
+                  )}
+                </Card>
+              ))}
+            </div>
+            {similarItems.length > 3 && (
+              <Button
+                type="link"
                 size="small"
-                hoverable
-                onClick={() => navigate(`/issues/${item.id}`)}
-                style={{ cursor: 'pointer' }}
+                onClick={() => setShowAllSimilar(!showAllSimilar)}
+                style={{ marginTop: 8 }}
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <strong>{item.title}</strong>
-                  <span style={{ color: '#1677ff', fontSize: 12 }}>
-                    {Math.round(item.similarity * 100)}% 匹配
-                  </span>
-                </div>
-                {item.resolution && (
-                  <Paragraph
-                    type="secondary"
-                    style={{ marginTop: 4, marginBottom: 0, fontSize: 13 }}
-                    ellipsis={{ rows: 2 }}
-                  >
-                    {item.resolution}
-                  </Paragraph>
-                )}
-              </Card>
-            ))}
-          </div>
+                {showAllSimilar
+                  ? t('issue.detail.collapseSimilar')
+                  : t('issue.detail.expandSimilar', { count: similarItems.length })}
+              </Button>
+            )}
+          </>
         ) : (
           <Empty description={t('issue.detail.noSimilarCases')} />
         )}
