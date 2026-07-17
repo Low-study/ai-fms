@@ -2,10 +2,13 @@ package com.aifms.modules.agent.infrastructure;
 
 import com.aifms.modules.agent.domain.ChatModelPort;
 import com.aifms.modules.agent.domain.ClassifiedIssue;
+import com.aifms.modules.agent.domain.LanguageGuard;
 import com.aifms.modules.agent.domain.PromptTemplatePort;
 import com.aifms.modules.agent.domain.QaSkill;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -23,6 +26,9 @@ public class QaSkillAdapter implements QaSkill {
     private static final int TEMPLATE_VERSION = 1;
     private static final String DEFAULT_MODEL = "gpt-4o";
     private static final double DEFAULT_TEMPERATURE = 0.7;
+    private static final int MAX_RETRIES = 2;
+
+    private static final Logger log = LoggerFactory.getLogger(QaSkillAdapter.class);
 
     private final ChatModelPort chatModelPort;
     private final PromptTemplatePort promptTemplatePort;
@@ -38,31 +44,42 @@ public class QaSkillAdapter implements QaSkill {
 
     @Override
     public Mono<String> generateReply(ClassifiedIssue issue) {
+        String expectedLang = LanguageGuard.detect(issue.issue().title());
+        String userPrompt = "Issue:\n"
+                + "Title: " + issue.issue().title() + "\n"
+                + "Description: " + issue.issue().description() + "\n"
+                + "Category: " + issue.category() + "\n"
+                + "Priority: " + issue.priority() + "\n"
+                + "Severity: " + issue.severity();
         return promptTemplatePort.findByNameVersion(TEMPLATE_NAME, TEMPLATE_VERSION)
-                .flatMap(template -> {
-                    String systemPrompt = template.systemTemplate();
-                    String userPrompt = template.userTemplate()
-                            + "\n\nIssue:\n"
-                            + "Title: " + issue.issue().title() + "\n"
-                            + "Description: " + issue.issue().description() + "\n"
-                            + "Category: " + issue.category() + "\n"
-                            + "Priority: " + issue.priority() + "\n"
-                            + "Severity: " + issue.severity();
-                    ChatModelPort.ChatRequest request = new ChatModelPort.ChatRequest(
-                            systemPrompt, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE);
-                    return chatModelPort.call(request);
-                })
-                .flatMap(response -> Mono.fromCallable(() -> {
-                    String content = response.content();
-                    // 尝试从 JSON 响应中提取 reply 字段
+                .flatMap(template -> callAndCheck(template.systemTemplate(), userPrompt, expectedLang, 0))
+                .flatMap(resp -> Mono.fromCallable(() -> {
                     try {
-                        QaReplyJson json = objectMapper.readValue(extractJson(content), QaReplyJson.class);
-                        return json.reply();
+                        return objectMapper.readValue(extractJson(resp.content()), QaReplyJson.class).reply();
                     } catch (JsonProcessingException e) {
-                        // 如果解析失败，直接返回原始内容
-                        return extractJson(content);
+                        return extractJson(resp.content());
                     }
                 }).subscribeOn(Schedulers.boundedElastic()));
+    }
+
+    private Mono<ChatModelPort.ChatResponse> callAndCheck(String sysPrompt, String userPrompt,
+                                                          String expectedLang, int retryCount) {
+        String effectiveSys = sysPrompt;
+        if (retryCount > 0) {
+            effectiveSys = sysPrompt + LanguageGuard.retryEmphasis(expectedLang);
+            log.warn("QA language mismatch, retry {}/{}: expected={}", retryCount, MAX_RETRIES, expectedLang);
+        }
+        return chatModelPort.call(new ChatModelPort.ChatRequest(
+                        effectiveSys, userPrompt, DEFAULT_MODEL, DEFAULT_TEMPERATURE))
+                .flatMap(resp -> {
+                    String text = extractJson(resp.content());
+                    try { text = objectMapper.readValue(text, QaReplyJson.class).reply(); } catch (Exception ignored) {}
+                    String outLang = LanguageGuard.detect(text);
+                    if (!outLang.equals(expectedLang) && retryCount < MAX_RETRIES) {
+                        return callAndCheck(sysPrompt, userPrompt, expectedLang, retryCount + 1);
+                    }
+                    return Mono.just(resp);
+                });
     }
 
     /**
