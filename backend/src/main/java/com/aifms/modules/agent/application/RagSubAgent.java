@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.UUID;
+
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -50,7 +52,8 @@ public class RagSubAgent {
                 description != null ? description : "",
                 "");
 
-        return Mono.defer(() -> ragSkill.retrieveSimilar(issue))
+        // @Tool 方法无 findingId，传 null 跳过 embedding 存储
+        return Mono.defer(() -> ragSkill.retrieveSimilar(null, issue))
                 .map(this::toJson)
                 .subscribeOn(Schedulers.boundedElastic())
                 .toFuture();
@@ -75,9 +78,9 @@ public class RagSubAgent {
      * @param issue 当前工单信息
      * @return 相似工单检索结果
      */
-    public Mono<SimilarIssues> retrieveSimilarReactive(ParsedIssue issue) {
-        log.info("RagSubAgent [reactive]: 开始检索相似工单, title={}", issue.title());
-        return Mono.defer(() -> ragSkill.retrieveSimilar(issue))
+    public Mono<SimilarIssues> retrieveSimilarReactive(UUID findingId, ParsedIssue issue) {
+        log.info("RagSubAgent [reactive]: 开始检索相似工单, findingId={}, title={}", findingId, issue.title());
+        return Mono.defer(() -> ragSkill.retrieveSimilar(findingId, issue))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 }

@@ -27,6 +27,10 @@ public class IssueEmbeddingEntity {
     /** 嵌入内容（指摘描述文本） */
     private String content;
 
+    /** pgvector 向量值（仅通过原生 SQL CAST 写入，不通过实体映射） */
+    @Transient
+    private String embeddingStr;
+
     /** 嵌入模型名称 */
     private String modelName;
 
@@ -50,6 +54,9 @@ public class IssueEmbeddingEntity {
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
+
+    public String getEmbeddingStr() { return embeddingStr; }
+    public void setEmbeddingStr(String s) { this.embeddingStr = s; }
 
     public String getModelName() { return modelName; }
     public void setModelName(String modelName) { this.modelName = modelName; }

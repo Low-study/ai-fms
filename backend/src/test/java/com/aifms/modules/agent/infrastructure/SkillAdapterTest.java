@@ -215,7 +215,7 @@ class SkillAdapterTest {
             when(issueEmbeddingRepository.findSimilar(any(), anyInt()))
                     .thenReturn(Flux.empty());
 
-            Mono<SimilarIssues> result = knowledgeRagSkillAdapter.retrieveSimilar(issue);
+            Mono<SimilarIssues> result = knowledgeRagSkillAdapter.retrieveSimilar(null, issue);
 
             StepVerifier.create(result)
                     .assertNext(similar -> {
@@ -229,7 +229,7 @@ class SkillAdapterTest {
         void shouldNotErrorForAnyInput() {
             ParsedIssue nullIssue = new ParsedIssue(null, null, null);
 
-            Mono<SimilarIssues> result = knowledgeRagSkillAdapter.retrieveSimilar(nullIssue);
+            Mono<SimilarIssues> result = knowledgeRagSkillAdapter.retrieveSimilar(null, nullIssue);
 
             StepVerifier.create(result)
                     .expectNextMatches(similar -> similar.items().isEmpty())

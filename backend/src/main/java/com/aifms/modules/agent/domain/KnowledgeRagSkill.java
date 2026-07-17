@@ -1,6 +1,7 @@
 package com.aifms.modules.agent.domain;
 
 import reactor.core.publisher.Mono;
+import java.util.UUID;
 
 /**
  * 知识库 RAG 检索技能接口。
@@ -17,5 +18,5 @@ public interface KnowledgeRagSkill {
      * @param issue 当前工单信息
      * @return 相似工单检索结果
      */
-    Mono<SimilarIssues> retrieveSimilar(ParsedIssue issue);
+    Mono<SimilarIssues> retrieveSimilar(UUID findingId, ParsedIssue issue);
 }

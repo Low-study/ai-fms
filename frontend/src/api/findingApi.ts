@@ -6,4 +6,14 @@ export const findingApi = {
   list: (params: { keyword?: string; page?: number; size?: number }) =>
     apiClient.get<PageResult<Finding>>('/findings', { params }),
   getById: (id: string) => apiClient.get<Finding>(`/findings/${id}`),
+  getSimilar: (id: string) =>
+    apiClient.get<{ items: SimilarItem[] }>(`/findings/${id}/similar`),
 };
+
+export interface SimilarItem {
+  id: string;
+  title: string;
+  similarity: number;
+  resolution: string;
+  reportDraft: string;
+}

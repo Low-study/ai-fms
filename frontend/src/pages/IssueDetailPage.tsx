@@ -4,7 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { findingApi } from '../api/findingApi';
+import { findingApi, type SimilarItem } from '../api/findingApi';
 import { ApiError } from '../api/client';
 import StatusTag from '../components/StatusTag';
 import type { Finding } from '../types/finding';
@@ -20,6 +20,7 @@ export default function IssueDetailPage() {
   const [finding, setFinding] = useState<Finding | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [similarItems, setSimilarItems] = useState<SimilarItem[]>([]);
 
   const i18nError = (err: unknown, fallbackKey: string): string => {
     if (err instanceof ApiError) {
@@ -36,6 +37,11 @@ export default function IssueDetailPage() {
       .getById(id)
       .then((response) => {
         setFinding(response.data);
+        // 加载相似案例
+        return findingApi.getSimilar(id);
+      })
+      .then((similarRes) => {
+        if (similarRes) setSimilarItems(similarRes.data.items ?? []);
       })
       .catch((err: unknown) => {
         setLoadError(i18nError(err, 'issue.detail.error'));
@@ -146,7 +152,37 @@ export default function IssueDetailPage() {
         title={t('issue.detail.similarCases')}
         style={{ marginTop: 16 }}
       >
-        <Empty description={t('issue.detail.noSimilarCases')} />
+        {similarItems.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {similarItems.map((item) => (
+              <Card
+                key={item.id}
+                size="small"
+                hoverable
+                onClick={() => navigate(`/issues/${item.id}`)}
+                style={{ cursor: 'pointer' }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong>{item.title}</strong>
+                  <span style={{ color: '#1677ff', fontSize: 12 }}>
+                    {Math.round(item.similarity * 100)}% 匹配
+                  </span>
+                </div>
+                {item.resolution && (
+                  <Paragraph
+                    type="secondary"
+                    style={{ marginTop: 4, marginBottom: 0, fontSize: 13 }}
+                    ellipsis={{ rows: 2 }}
+                  >
+                    {item.resolution}
+                  </Paragraph>
+                )}
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Empty description={t('issue.detail.noSimilarCases')} />
+        )}
       </Card>
 
       {/* Processing Suggestion */}

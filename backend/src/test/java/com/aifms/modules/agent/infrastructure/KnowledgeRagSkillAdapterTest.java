@@ -204,7 +204,7 @@ class KnowledgeRagSkillAdapterTest {
 
         ParsedIssue issue = new ParsedIssue("登录页面报错", "用户反馈 500 错误", "raw...");
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {
@@ -228,7 +228,7 @@ class KnowledgeRagSkillAdapterTest {
 
         ParsedIssue issue = new ParsedIssue("登录问题", "认证失败", "raw...");
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {
@@ -251,7 +251,7 @@ class KnowledgeRagSkillAdapterTest {
     void shouldReturnEmptyResult_whenQueryTextIsAllNull() {
         ParsedIssue issue = new ParsedIssue(null, null, null);
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {
@@ -265,7 +265,7 @@ class KnowledgeRagSkillAdapterTest {
     void shouldReturnEmptyResult_whenQueryTextIsBlank() {
         ParsedIssue issue = new ParsedIssue("   ", "", "raw...");
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {
@@ -282,7 +282,7 @@ class KnowledgeRagSkillAdapterTest {
 
         ParsedIssue issue = new ParsedIssue("登录报错", "500 错误", "raw...");
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {
@@ -302,7 +302,7 @@ class KnowledgeRagSkillAdapterTest {
 
         ParsedIssue issue = new ParsedIssue("完全无关的问题", "天气预报查询", "raw...");
 
-        Mono<SimilarIssues> result = adapter.retrieveSimilar(issue);
+        Mono<SimilarIssues> result = adapter.retrieveSimilar(null, issue);
 
         StepVerifier.create(result)
                 .assertNext(similar -> {

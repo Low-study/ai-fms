@@ -14,6 +14,7 @@ import reactor.core.scheduler.Schedulers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * 知识库 RAG 检索技能适配器。
@@ -46,7 +47,7 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
     }
 
     @Override
-    public Mono<SimilarIssues> retrieveSimilar(ParsedIssue issue) {
+    public Mono<SimilarIssues> retrieveSimilar(UUID findingId, ParsedIssue issue) {
         String queryText = buildQueryText(issue);
 
         if (queryText.isBlank()) {
@@ -56,9 +57,21 @@ public class KnowledgeRagSkillAdapter implements KnowledgeRagSkill {
         return Mono.fromCallable(() -> queryText)
                 .subscribeOn(Schedulers.boundedElastic())
                 .flatMap(text -> embeddingModelPort.embed(text)
-                        .flatMap(this::searchAndMapResults)
+                        .flatMap(embedding -> {
+                            // 存向量到 issue_embeddings（仅当 findingId 非 null）
+                            if (findingId != null) {
+                                UUID embedId = UUID.randomUUID();
+                                String content = queryText.substring(0, Math.min(queryText.length(), 1000));
+                                String vectorStr = convertToPgVector(embedding);
+                                return issueEmbeddingRepository.insertEmbedding(
+                                        embedId, findingId, content, vectorStr, "bge-m3",
+                                        java.time.Instant.now())
+                                        .then(searchAndMapResults(embedding));
+                            }
+                            return searchAndMapResults(embedding);
+                        })
                         .onErrorResume(e -> {
-                            log.warn("RAG 检索失败（embedding 不可用），降级返回空结果: {}", e.getMessage());
+                            log.warn("RAG 检索失败，降级返回空结果: {}", e.getMessage());
                             return Mono.just(new SimilarIssues(List.of()));
                         })
                 );

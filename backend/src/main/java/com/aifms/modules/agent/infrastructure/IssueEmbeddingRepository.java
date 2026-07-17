@@ -4,12 +4,14 @@ import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
 /**
  * {@link IssueEmbeddingEntity} 的 R2DBC 数据访问接口。
  * 支持基于 pgvector 余弦距离的向量相似度检索。
+ * 向量写入使用原生 SQL CAST 避免 Java String → pgvector 类型转换失败。
  *
  * @author aifms
  */
@@ -24,7 +26,16 @@ public interface IssueEmbeddingRepository extends ReactiveCrudRepository<IssueEm
      * @param limit          返回的最大记录数
      * @return 按相似度降序排列的嵌入实体列表（含 distance 瞬态字段）
      */
-    @Query("SELECT ie.*, ie.embedding <-> CAST(:queryEmbedding AS vector) AS distance " +
-           "FROM issue_embeddings ie ORDER BY distance LIMIT :limit")
+    @Query("SELECT ie.id, ie.finding_id, ie.content, ie.model_name, ie.created_at, " +
+            "ie.embedding <-> CAST(:queryEmbedding AS vector) AS distance " +
+            "FROM issue_embeddings ie ORDER BY distance LIMIT :limit")
     Flux<IssueEmbeddingEntity> findSimilar(String queryEmbedding, int limit);
+
+    /**
+     * 原生 SQL 插入向量记录（绕过 R2DBC 的 Java String → pgvector 类型映射限制）。
+     */
+    @Query("INSERT INTO issue_embeddings (id, finding_id, content, embedding, model_name, created_at) " +
+            "VALUES (:id, :findingId, :content, CAST(:embedding AS vector), :modelName, :createdAt)")
+    Mono<Integer> insertEmbedding(UUID id, UUID findingId, String content, String embedding, String modelName,
+                                   java.time.Instant createdAt);
 }

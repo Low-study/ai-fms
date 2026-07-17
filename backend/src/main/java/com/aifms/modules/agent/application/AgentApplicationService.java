@@ -98,7 +98,7 @@ public class AgentApplicationService {
                         toJson("findingId", findingId, "ticketId", ticketId))
                 .flatMap(execution ->
                         loadFindingAndDocument(findingId)
-                                .flatMap(doc -> runSubAgentPipeline(doc, ticketId, execution))
+                                .flatMap(doc -> runSubAgentPipeline(doc, ticketId, execution, findingId))
                                 .flatMap(response ->
                                         updateFinding(findingId, response)
                                                 .flatMap(ignored ->
@@ -146,7 +146,7 @@ public class AgentApplicationService {
      * 通过 3 个子代理执行流水线，每步发布进度并记录日志。
      */
     private Mono<IssueResponse> runSubAgentPipeline(ParsedDocument doc, String ticketId,
-                                                     AgentExecution execution) {
+                                                      AgentExecution execution, UUID findingId) {
         log.info("开始执行 SubAgent 流水线: executionId={}", execution.id());
 
         // SubAgent 1: IngestSubAgent — 解析 + 分类 (0% → 40%)
@@ -161,7 +161,7 @@ public class AgentApplicationService {
                                 // SubAgent 2: RagSubAgent — 相似工单检索 (40% → 60%)
                                 .then(publishProgress(ticketId, "rag", 45, "RagSubAgent 开始检索"))
                                 .then(logStep(execution.id(), "subagent_start", "rag", ""))
-                                .then(ragSubAgent.retrieveSimilarReactive(classified.issue())
+                                .then(ragSubAgent.retrieveSimilarReactive(findingId, classified.issue())
                                         .subscribeOn(Schedulers.boundedElastic()))
                                 .flatMap(similar ->
                                         publishProgress(ticketId, "rag", 60, "RagSubAgent 完成")

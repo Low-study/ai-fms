@@ -2,6 +2,9 @@ package com.aifms.modules.finding.presentation;
 
 import com.aifms.common.Result;
 import com.aifms.common.dto.PageResult;
+import com.aifms.modules.agent.domain.KnowledgeRagSkill;
+import com.aifms.modules.agent.domain.ParsedIssue;
+import com.aifms.modules.agent.domain.SimilarIssues;
 import com.aifms.modules.finding.application.FindingApplicationService;
 import com.aifms.modules.finding.presentation.dto.CreateFindingRequest;
 import com.aifms.modules.finding.presentation.dto.FindingResponse;
@@ -26,9 +29,12 @@ import java.util.UUID;
 public class FindingController {
 
     private final FindingApplicationService findingApplicationService;
+    private final KnowledgeRagSkill knowledgeRagSkill;
 
-    public FindingController(FindingApplicationService findingApplicationService) {
+    public FindingController(FindingApplicationService findingApplicationService,
+                             KnowledgeRagSkill knowledgeRagSkill) {
         this.findingApplicationService = findingApplicationService;
+        this.knowledgeRagSkill = knowledgeRagSkill;
     }
 
     /**
@@ -88,5 +94,22 @@ public class FindingController {
     @DeleteMapping("/{id}")
     public Mono<Result<Void>> delete(@PathVariable UUID id) {
         return findingApplicationService.delete(id);
+    }
+
+    /**
+     * 按指摘 ID 检索相似历史案例（RAG）。
+     */
+    @GetMapping("/{id}/similar")
+    public Mono<Result<SimilarIssues>> getSimilar(@PathVariable UUID id) {
+        return findingApplicationService.getById(id)
+                .map(Result::getData)
+                .flatMap(fr -> {
+                    ParsedIssue parsed = new ParsedIssue(
+                        fr.getTitle() != null ? fr.getTitle() : "",
+                        fr.getDescription() != null ? fr.getDescription() : "",
+                        "");
+                    return knowledgeRagSkill.retrieveSimilar(id, parsed);
+                })
+                .map(Result::success);
     }
 }
