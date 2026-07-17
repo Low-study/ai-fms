@@ -21,7 +21,7 @@ public class IssueClassifySkillAdapter implements IssueClassifySkill {
 
     private static final String TEMPLATE_NAME = "issue_classify_skill";
     private static final int TEMPLATE_VERSION = 1;
-    private static final String DEFAULT_MODEL = "gpt-4o";
+    private static final String DEFAULT_MODEL = "deepseek-chat";
     private static final double DEFAULT_TEMPERATURE = 0.3;
 
     private final ChatModelPort chatModelPort;

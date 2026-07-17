@@ -22,7 +22,7 @@ public class ReportDraftSkillAdapter implements ReportDraftSkill {
 
     private static final String TEMPLATE_NAME = "report_draft_skill";
     private static final int TEMPLATE_VERSION = 1;
-    private static final String DEFAULT_MODEL = "gpt-4o";
+    private static final String DEFAULT_MODEL = "deepseek-chat";
     private static final double DEFAULT_TEMPERATURE = 0.5;
 
     private final ChatModelPort chatModelPort;
