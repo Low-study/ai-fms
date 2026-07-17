@@ -163,7 +163,8 @@
         "severity": "Severity",
         "status": "Status",
         "system": "System",
-        "suggestion": "Suggestion",
+        "suggestion": "AI Suggestion",
+        "qaReply": "QA Reply",
         "createdAt": "Created At"
       }
     },

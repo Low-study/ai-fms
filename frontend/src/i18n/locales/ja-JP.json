@@ -163,7 +163,8 @@
         "severity": "重要度",
         "status": "ステータス",
         "system": "システム",
-        "suggestion": "改善提案",
+        "suggestion": "AI提案",
+        "qaReply": "QA返信",
         "createdAt": "作成日時"
       }
     },

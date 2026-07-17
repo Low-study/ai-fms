@@ -163,7 +163,8 @@
         "severity": "严重程度",
         "status": "状态",
         "system": "系统",
-        "suggestion": "处理建议",
+        "suggestion": "AI建议",
+        "qaReply": "QA回复",
         "createdAt": "创建时间"
       }
     },
