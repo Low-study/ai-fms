@@ -1,0 +1,4 @@
+Cannot log in to the system.
+After entering correct credentials, the page refreshes back to the login form
+without any error message. Started after yesterday''s deployment.
+Multiple users affected across different browsers.

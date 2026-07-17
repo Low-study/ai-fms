@@ -1,0 +1,4 @@
+Editor role users cannot approve pull requests.
+Users with the "Editor" role are getting 403 errors when they try to approve PRs.
+The "Editor" role should have approval permission per our documentation.
+This started happening after yesterday's permission model migration.

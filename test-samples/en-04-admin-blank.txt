@@ -1,0 +1,4 @@
+Admin panel shows blank page for some users.
+Three admin users report that the admin panel loads as a completely white page since this morning.
+They can access the main dashboard but not /admin/* routes.
+Console shows a JavaScript error: "Cannot read properties of null (reading 'permissions')".

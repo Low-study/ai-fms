@@ -1,0 +1,4 @@
+New users cannot create repositories.
+Onboarding flow is broken — new users get "Insufficient permissions" when clicking "New Repository".
+This worked fine last week.
+Existing users have no issues — only accounts created in the last 48 hours are affected.

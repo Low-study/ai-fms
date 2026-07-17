@@ -1,0 +1,4 @@
+Database backup job failed for the third consecutive night.
+The scheduled pg_dump process exits with exit code 1 and no dump file is created.
+Error log shows: "could not connect to database: connection refused".
+The database itself is running fine for all other applications.

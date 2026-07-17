@@ -1,0 +1,5 @@
+Authentication fails on the login page.
+Entering the correct username and password results in
+"Username or password is incorrect" error message.
+The issue began immediately after yesterday's maintenance window.
+Multiple employees have confirmed the same problem.

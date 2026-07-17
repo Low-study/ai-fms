@@ -1,0 +1,5 @@
+The login page shows an authentication error.
+Even with the correct username and password, the system displays
+"Username or password is incorrect".
+This problem started right after yesterday's system maintenance.
+Several users have reported the same symptom.
